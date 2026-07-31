@@ -1,8 +1,11 @@
 # Dependencies
 node_modules/
+.vite/
 
-# Build
+# Build outputs
 dist/
+packages/*/dist/
+site/dist/
 
 # Logs / OS
 *.log

@@ -27,33 +27,24 @@ type SearchResponse = {
   items: SearchIssueItem[];
 };
 
-const TOKEN_KEY = "gitbook_gh_token";
+/** GitHub activity sidebar typically lists ~25 repos before truncating. */
+export const ACTIVITY_FEED_REPO_CAP = 25;
+
+let authToken = "";
+
+export function setAuthToken(token: string): void {
+  authToken = token.trim();
+}
+
+export function getAuthToken(): string {
+  return authToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
+}
 
 let lastRateLimit: RateLimitInfo = {
   remaining: -1,
   limit: -1,
   reset: 0,
 };
-
-export function getStoredToken(): string {
-  try {
-    return sessionStorage.getItem(TOKEN_KEY) ?? "";
-  } catch {
-    return "";
-  }
-}
-
-export function setStoredToken(token: string): void {
-  try {
-    if (token.trim()) {
-      sessionStorage.setItem(TOKEN_KEY, token.trim());
-    } else {
-      sessionStorage.removeItem(TOKEN_KEY);
-    }
-  } catch {
-    /* ignore */
-  }
-}
 
 export function getRateLimit(): RateLimitInfo {
   return { ...lastRateLimit };
@@ -82,7 +73,7 @@ async function githubFetch(url: string): Promise<Response> {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  const token = getStoredToken();
+  const token = getAuthToken();
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -94,7 +85,7 @@ async function githubFetch(url: string): Promise<Response> {
     const body = await res.json().catch(() => ({}));
     const msg =
       (body as { message?: string }).message ??
-      "GitHub rate limit exceeded. Add a personal access token and try again.";
+      "GitHub rate limit exceeded. Set GITHUB_TOKEN and try again.";
     throw new GitHubApiError(msg, res.status);
   }
 
@@ -108,7 +99,6 @@ async function githubFetch(url: string): Promise<Response> {
   return res;
 }
 
-/** Fetch a single search page (max 100 items). */
 export async function searchIssuesPage(
   query: string,
   page: number
@@ -126,10 +116,6 @@ export async function searchIssuesPage(
   return (await res.json()) as SearchResponse;
 }
 
-/**
- * Paginate a search query up to 1000 results (GitHub Search hard cap).
- * Caller should split date ranges when total_count > 1000.
- */
 export async function searchIssuesAll(
   query: string,
   onProgress?: (fetched: number, total: number) => void
@@ -154,7 +140,6 @@ export async function searchIssuesAll(
 }
 
 export function repoFullNameFromUrl(repositoryUrl: string): string {
-  // https://api.github.com/repos/owner/name
   const parts = repositoryUrl.replace(/\/$/, "").split("/");
   const name = parts.pop() ?? "";
   const owner = parts.pop() ?? "";

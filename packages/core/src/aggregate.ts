@@ -1,15 +1,11 @@
-import {
-  repoFullNameFromUrl,
-  searchIssuesAll,
-  type SearchIssueItem,
-} from "../api/github";
+import { repoFullNameFromUrl, searchIssuesAll, type SearchIssueItem } from "./github.js";
 import {
   buildSearchQuery,
   rangeDayCount,
   splitRange,
   type AuditKind,
   type DateRange,
-} from "./queries";
+} from "./queries.js";
 
 export type ContributionItem = {
   id: number;
@@ -79,10 +75,6 @@ export function aggregateByRepo(items: ContributionItem[]): RepoBucket[] {
   return [...map.values()].sort((a, b) => b.items.length - a.items.length);
 }
 
-/**
- * Fetch all search results for a kind+range, recursively splitting
- * the date window when GitHub's 1000-result search cap would truncate.
- */
 export async function fetchAllForRange(
   username: string,
   kind: AuditKind,
@@ -100,18 +92,15 @@ export async function fetchAllForRange(
     return items;
   }
 
-  // Over the hard cap — split the range and recurse (need at least 2 days)
   if (rangeDayCount(range) < 2) {
     onProgress?.(
-      `Warning: ${total_count} results in a single day; only first 1000 returned for ${range.from}`
+      `Warning: ${total_count} results in one day; only first 1000 returned for ${range.from}`
     );
     return items;
   }
 
   const [left, right] = splitRange(range);
-  onProgress?.(
-    `Over 1000 results (${total_count}). Splitting ${range.from}..${range.to}`
-  );
+  onProgress?.(`Over 1000 results (${total_count}). Splitting ${range.from}..${range.to}`);
 
   const leftItems = await fetchAllForRange(username, kind, left, onProgress);
   const rightItems = await fetchAllForRange(username, kind, right, onProgress);

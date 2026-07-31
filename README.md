@@ -1,47 +1,67 @@
-# OpenHearth — Contribution Audit
+# OpenHearth
 
-A cozy open-source contribution audit for any GitHub user.
+**CLI tool** to audit every GitHub PR, issue, and review — including repos hidden from your activity feed.
 
-GitHub’s profile activity feed truncates heavily (“N repositories not shown”).
-**OpenHearth** queries the Search API and lists **every** pull request, issue, and review in a date range — grouped by repository, with merged / open / closed counts and JSON/CSV export.
+**Website** ([ayush7614.github.io/GitBook](https://ayush7614.github.io/GitBook/)) explains the product. The **npm CLI** does the work.
 
-**Live:** [ayush7614.github.io/GitBook](https://ayush7614.github.io/GitBook/)
+## Why OpenHearth?
 
-## Features
+GitHub’s profile activity truncates heavily (“51 repositories not shown”). Search shows lists; **OpenHearth audits** — with features that don’t exist elsewhere:
 
-- Username + month/year lookup
-- Tabs for **Pull Requests**, **Issues**, and **Reviews**
-- Per-repo breakdown with expandable item lists
-- Totals that match GitHub search (not the truncated activity sidebar)
-- **Dark & light themes** — cozy dark by default, preference saved in localStorage
-- Optional personal access token (session only) for higher Search rate limits
-- Automatic date-range splitting when a query exceeds the 1000-result Search cap
-- Export JSON and CSV
+- **Hidden repo detection** — estimates repos your activity sidebar hides
+- **Full audit** — PRs + issues + reviews in one command
+- **Auto date-splitting** — past GitHub’s 1000-result search cap
+- **Merge rate, busiest day, top repos**
+- **JSON / CSV export**
 
-## Development
+## Install & run (CLI)
 
 ```bash
+# From this repo (development)
 npm install
-npm run dev
+npm run build:cli
+npm run openhearth -- audit Ayush7614 --month 2026-07
+
+# After npm publish
+npx openhearth audit Ayush7614 --month 2026-07
+npx openhearth hidden Ayush7614 --month 2026-07
 ```
+
+Set `GITHUB_TOKEN` for higher rate limits.
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `openhearth audit <user>` | Full PR + issue + review audit |
+| `openhearth hidden <user>` | Quick hidden-repo report |
+| `--month YYYY-MM` | Audit a calendar month |
+| `--from` / `--to` | Custom date range |
+| `--kind pr\|issue\|review\|all` | Filter by type |
+| `--json [file]` | Export JSON |
+| `--csv [file]` | Export CSV |
+
+## Website (docs only)
 
 ```bash
-npm run build
-npm run preview
+npm run dev:site    # local marketing/docs site
+npm run build:site  # builds site/dist for GitHub Pages
 ```
 
-Production builds use `base: /GitBook/` for GitHub Pages project hosting.
+## Monorepo layout
 
-## Deploy
+```
+packages/core/   @openhearth/core — shared audit engine
+packages/cli/    openhearth — npm CLI
+site/            Marketing & docs (GitHub Pages)
+```
 
-Pushes to `main` build and publish `dist/` via [GitHub Actions](.github/workflows/deploy.yml).
+## Publish CLI to npm
 
-In the repository settings, set **Pages** → Source to **GitHub Actions**.
-
-## Token (optional)
-
-Without a token, the unauthenticated Search API is limited (~10 requests/minute).
-Paste a classic PAT with public read access in the UI; it is stored in `sessionStorage` and sent only to `api.github.com`.
+```bash
+npm run build:cli
+cd packages/cli && npm publish --access public
+```
 
 ## Author
 

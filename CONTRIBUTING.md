@@ -1,25 +1,31 @@
-# Contributing to GitBook
+# Contributing to OpenHearth
 
-Thanks for helping improve the Contribution Audit tool.
+## Structure
+
+- `packages/core` — audit engine (`@openhearth/core`)
+- `packages/cli` — npm CLI (`openhearth`)
+- `site` — marketing/docs website (GitHub Pages)
 
 ## Setup
 
-1. Fork and clone the repo
-2. `npm install`
-3. `npm run dev` — app at the Vite local URL
-4. `npm run build` — must succeed before opening a PR
+```bash
+npm install
+npm run build
+npm run dev:site          # website locally
+npm run openhearth -- --help
+```
 
 ## Guidelines
 
-- Keep the product focused on **complete** PR / issue / review inventory (Search API), not a generic profile browser
-- Prefer small, reviewable PRs
-- Do not commit secrets, tokens, or `.env` files
-- Match existing TypeScript style in `src/`
+- Put audit logic in `@openhearth/core`; CLI is a thin terminal UI
+- Keep the **website** as docs/marketing only — the tool runs via npm
+- Do not commit tokens or `.env` files
 
-## Ideas for contributions
+## Publish CLI
 
-- Better date-range UX (custom from/to)
-- Commit / contribution-graph email diagnostics
-- Cached results / shareable audit URLs
+After merging to main:
 
-Open an issue first for larger changes.
+```bash
+npm run build:cli
+cd packages/cli && npm publish --access public
+```

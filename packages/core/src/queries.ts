@@ -1,6 +1,6 @@
 export type DateRange = {
-  from: string; // YYYY-MM-DD
-  to: string; // YYYY-MM-DD
+  from: string;
+  to: string;
 };
 
 export type AuditKind = "pr" | "issue" | "review";
@@ -15,8 +15,21 @@ export function formatDate(d: Date): string {
 
 export function monthRange(year: number, month: number): DateRange {
   const from = new Date(year, month - 1, 1);
-  const to = new Date(year, month, 0); // last day of month
+  const to = new Date(year, month, 0);
   return { from: formatDate(from), to: formatDate(to) };
+}
+
+export function parseMonth(value: string): DateRange {
+  const match = /^(\d{4})-(\d{2})$/.exec(value.trim());
+  if (!match) {
+    throw new Error(`Invalid month "${value}". Use YYYY-MM (e.g. 2026-07).`);
+  }
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) {
+    throw new Error(`Invalid month "${value}". Month must be 01–12.`);
+  }
+  return monthRange(year, month);
 }
 
 export function buildSearchQuery(
@@ -35,7 +48,6 @@ export function buildSearchQuery(
   }
 }
 
-/** Split a date range into halves (inclusive calendar days). */
 export function splitRange(range: DateRange): [DateRange, DateRange] {
   const start = new Date(range.from + "T00:00:00");
   const end = new Date(range.to + "T00:00:00");

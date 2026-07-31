@@ -1,15 +1,20 @@
 {
-  "name": "openhearth",
+  "name": "openhearth-monorepo",
   "private": true,
   "version": "2.0.0",
-  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "site"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "npm run build -w @openhearth/core && npm run build -w openhearth && npm run build -w @openhearth/site",
+    "build:cli": "npm run build -w @openhearth/core && npm run build -w openhearth",
+    "build:site": "npm run build -w @openhearth/site",
+    "dev:site": "npm run dev -w @openhearth/site",
+    "dev:cli": "npm run build:cli && npm run start -w openhearth --",
+    "openhearth": "npm run start -w openhearth --"
   },
   "devDependencies": {
-    "typescript": "^5.8.2",
-    "vite": "^6.2.2"
+    "typescript": "^5.8.2"
   }
 }

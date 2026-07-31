@@ -1,10 +1,10 @@
 import "./styles/main.css";
 import { initTheme } from "./lib/theme";
-import { renderApp } from "./ui/app";
+import { renderSite } from "./ui/site";
 
 initTheme();
 
 const root = document.querySelector<HTMLElement>("#app");
 if (root) {
-  renderApp(root);
+  renderSite(root);
 }

@@ -1,4 +1,4 @@
-name: Deploy OpenHearth to GitHub Pages
+name: Deploy OpenHearth site to GitHub Pages
 
 on:
   push:
@@ -30,8 +30,8 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Build site
+        run: npm run build:site
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -39,7 +39,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: site/dist
 
   deploy:
     needs: build
