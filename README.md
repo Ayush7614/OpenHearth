@@ -1,9 +1,9 @@
-# GitBook — Contribution Audit
+# OpenHearth — Contribution Audit
 
-Complete open-source contribution audit for any GitHub user.
+A cozy open-source contribution audit for any GitHub user.
 
 GitHub’s profile activity feed truncates heavily (“N repositories not shown”).
-**GitBook** queries the Search API and lists **every** pull request, issue, and review in a date range — grouped by repository, with merged / open / closed counts and JSON/CSV export.
+**OpenHearth** queries the Search API and lists **every** pull request, issue, and review in a date range — grouped by repository, with merged / open / closed counts and JSON/CSV export.
 
 **Live:** [ayush7614.github.io/GitBook](https://ayush7614.github.io/GitBook/)
 
@@ -13,6 +13,7 @@ GitHub’s profile activity feed truncates heavily (“N repositories not shown�
 - Tabs for **Pull Requests**, **Issues**, and **Reviews**
 - Per-repo breakdown with expandable item lists
 - Totals that match GitHub search (not the truncated activity sidebar)
+- **Dark & light themes** — cozy dark by default, preference saved in localStorage
 - Optional personal access token (session only) for higher Search rate limits
 - Automatic date-range splitting when a query exceeds the 1000-result Search cap
 - Export JSON and CSV

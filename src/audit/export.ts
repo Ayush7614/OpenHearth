@@ -1,4 +1,5 @@
 import type { AuditResult, ContributionItem } from "./aggregate";
+import { EXPORT_PREFIX } from "../lib/brand";
 
 function downloadBlob(filename: string, blob: Blob): void {
   const url = URL.createObjectURL(blob);
@@ -36,7 +37,7 @@ export function exportJson(result: AuditResult): void {
     type: "application/json",
   });
   downloadBlob(
-    `gitbook-${result.kind}-${result.username}-${result.range.from}_${result.range.to}.json`,
+    `${EXPORT_PREFIX}-${result.kind}-${result.username}-${result.range.from}_${result.range.to}.json`,
     blob
   );
 }
@@ -59,7 +60,7 @@ export function exportCsv(result: AuditResult): void {
   const csv = [header.join(","), ...rows].join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   downloadBlob(
-    `gitbook-${result.kind}-${result.username}-${result.range.from}_${result.range.to}.csv`,
+    `${EXPORT_PREFIX}-${result.kind}-${result.username}-${result.range.from}_${result.range.to}.csv`,
     blob
   );
 }

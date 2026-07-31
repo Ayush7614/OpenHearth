@@ -1,24 +1,74 @@
+/* Cozy dark (default) */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-deep: #0f0d0b;
+  --bg: #161311;
+  --bg-elevated: #1f1b18;
+  --bg-soft: #2a2520;
+  --ink: #f2ebe3;
+  --ink-muted: #a89f94;
+  --ink-faint: #6f675e;
+  --accent: #e8a65d;
+  --accent-hover: #f0b872;
+  --accent-dim: #c48442;
+  --accent-glow: rgba(232, 166, 93, 0.16);
+  --accent-text: #1a1208;
+  --warn: #e8c06a;
+  --danger: #e07a6a;
+  --merged: #c4a0f0;
+  --open: #e8a65d;
+  --closed: #8a8278;
+  --line: rgba(242, 235, 227, 0.09);
+  --input-bg: rgba(31, 27, 24, 0.92);
+  --repo-bg: rgba(31, 27, 24, 0.72);
+  --repo-hover-border: rgba(232, 166, 93, 0.28);
+  --item-hover: rgba(255, 248, 240, 0.04);
+  --pill-merged-bg: rgba(196, 160, 240, 0.14);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --body-gradient:
+    radial-gradient(ellipse 80% 50% at 8% -8%, rgba(232, 166, 93, 0.14), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 92% 2%, rgba(120, 72, 40, 0.22), transparent 50%),
+    linear-gradient(168deg, var(--bg-deep) 0%, var(--bg) 48%, #12100e 100%);
+}
+
+/* Cozy light */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-deep: #ebe4da;
+  --bg: #f5f0e8;
+  --bg-elevated: #fffbf5;
+  --bg-soft: #e8dfd3;
+  --ink: #2a231c;
+  --ink-muted: #6b6156;
+  --ink-faint: #9a9084;
+  --accent: #b87333;
+  --accent-hover: #c88442;
+  --accent-dim: #965f28;
+  --accent-glow: rgba(184, 115, 51, 0.14);
+  --accent-text: #fffbf5;
+  --warn: #a67c2e;
+  --danger: #c44f3f;
+  --merged: #7c5cbf;
+  --open: #b87333;
+  --closed: #8a8278;
+  --line: rgba(42, 35, 28, 0.11);
+  --input-bg: rgba(255, 251, 245, 0.96);
+  --repo-bg: rgba(255, 251, 245, 0.88);
+  --repo-hover-border: rgba(184, 115, 51, 0.35);
+  --item-hover: rgba(42, 35, 28, 0.05);
+  --pill-merged-bg: rgba(124, 92, 191, 0.12);
+  --shadow: 0 20px 50px rgba(80, 60, 40, 0.12);
+  --body-gradient:
+    radial-gradient(ellipse 75% 45% at 10% -5%, rgba(184, 115, 51, 0.1), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 0%, rgba(210, 180, 140, 0.35), transparent 50%),
+    linear-gradient(168deg, var(--bg-deep) 0%, var(--bg) 50%, #f0e9df 100%);
+}
+
 :root {
-  --bg-deep: #0c1210;
-  --bg: #121a17;
-  --bg-elevated: #1a2420;
-  --bg-soft: #22302a;
-  --ink: #e8f0eb;
-  --ink-muted: #8fa398;
-  --ink-faint: #5f7368;
-  --accent: #3dcf8e;
-  --accent-dim: #2a9a68;
-  --accent-glow: rgba(61, 207, 142, 0.18);
-  --warn: #e8b84a;
-  --danger: #e86a5a;
-  --merged: #a78bfa;
-  --open: #3dcf8e;
-  --closed: #8fa398;
-  --line: rgba(232, 240, 235, 0.08);
   --radius: 12px;
   --font-display: "Instrument Serif", Georgia, serif;
   --font-body: "DM Sans", system-ui, sans-serif;
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
 
 *,
@@ -36,13 +86,11 @@ body {
   min-height: 100vh;
   font-family: var(--font-body);
   color: var(--ink);
-  background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(61, 207, 142, 0.12), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(45, 90, 70, 0.25), transparent 50%),
-    linear-gradient(165deg, var(--bg-deep) 0%, var(--bg) 45%, #0e1613 100%);
+  background: var(--body-gradient);
   background-attachment: fixed;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  transition: color 0.25s ease, background 0.25s ease;
 }
 
 #app {
@@ -65,10 +113,50 @@ a:hover {
   margin: 0 auto;
 }
 
+/* —— Top bar —— */
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem 0 0;
+  animation: rise 0.6s ease both;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--accent-dim);
+  background: var(--bg-soft);
+}
+
+.theme-toggle:active {
+  transform: scale(0.98);
+}
+
+.theme-toggle .theme-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 /* —— Hero —— */
 .hero {
-  padding: clamp(3.5rem, 10vh, 6.5rem) 0 2.5rem;
-  animation: rise 0.7s ease both;
+  padding: clamp(1.5rem, 4vh, 2.5rem) 0 2.5rem;
+  animation: rise 0.7s ease 0.05s both;
 }
 
 .brand {
@@ -88,7 +176,7 @@ a:hover {
 
 .tagline {
   margin: 0 0 2rem;
-  max-width: 32rem;
+  max-width: 34rem;
   font-size: 1.1rem;
   color: var(--ink-muted);
   animation: rise 0.7s ease 0.1s both;
@@ -143,12 +231,12 @@ a:hover {
   padding: 0.75rem 0.9rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(26, 36, 32, 0.85);
+  background: var(--input-bg);
   color: var(--ink);
   font: inherit;
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .field input:focus,
@@ -192,7 +280,7 @@ a:hover {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s, opacity 0.2s;
+  transition: transform 0.15s ease, background 0.2s, opacity 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .btn:active {
@@ -206,12 +294,12 @@ a:hover {
 
 .btn-primary {
   background: var(--accent);
-  color: #06110c;
+  color: var(--accent-text);
   min-height: 2.85rem;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #4fdb9b;
+  background: var(--accent-hover);
 }
 
 .btn-ghost {
@@ -344,13 +432,13 @@ a:hover {
 .repo {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(26, 36, 32, 0.55);
+  background: var(--repo-bg);
   overflow: hidden;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .repo:hover {
-  border-color: rgba(61, 207, 142, 0.25);
+  border-color: var(--repo-hover-border);
 }
 
 .repo-header {
@@ -400,7 +488,7 @@ a:hover {
 
 .pill.merged {
   color: var(--merged);
-  background: rgba(167, 139, 250, 0.12);
+  background: var(--pill-merged-bg);
 }
 
 .pill.open {
@@ -433,7 +521,7 @@ a:hover {
 }
 
 .item:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--item-hover);
 }
 
 .item-state {
