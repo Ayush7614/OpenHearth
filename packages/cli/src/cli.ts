@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { writeFileSync } from "node:fs";
 import {
   APP_NAME,

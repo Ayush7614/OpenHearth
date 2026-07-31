@@ -51,16 +51,15 @@ npm run build:site  # builds site/dist for GitHub Pages
 ## Monorepo layout
 
 ```
-packages/core/   @felix-ayush/openhearth-core — shared audit engine
-packages/cli/    @felix-ayush/openhearth — npm CLI
+packages/core/   @felix-ayush/openhearth-core — internal audit engine (not published)
+packages/cli/    @felix-ayush/openhearth — npm CLI (bundles core)
 site/            Marketing & docs (GitHub Pages)
 ```
 
 ## Publish CLI to npm
 
 ```bash
-npm run build:cli
-cd packages/cli && npm publish --access public
+npm run publish:packages
 ```
 
 ## Author
