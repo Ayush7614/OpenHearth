@@ -2,6 +2,14 @@ import { getRateLimit, getStoredToken, setStoredToken } from "../api/github";
 import { runAudit, type AuditResult } from "../audit/aggregate";
 import { exportCsv, exportJson } from "../audit/export";
 import { monthRange, type AuditKind, type DateRange } from "../audit/queries";
+import { APP_NAME, APP_TAGLINE } from "../lib/brand";
+import {
+  getStoredTheme,
+  themeLabel,
+  themeToggleHint,
+  toggleTheme,
+  type Theme,
+} from "../lib/theme";
 
 type TabCache = Partial<Record<AuditKind, AuditResult>>;
 
@@ -39,15 +47,20 @@ function monthOptionsHtml(): string {
   ).join("");
 }
 
+function themeToggleMarkup(theme: Theme): string {
+  const icon = theme === "dark" ? "☀" : "☾";
+  return `<button type="button" class="theme-toggle" id="theme-toggle" aria-label="${themeToggleHint(theme)}" title="${themeToggleHint(theme)}"><span class="theme-icon" aria-hidden="true">${icon}</span><span class="theme-label">${themeLabel(theme)}</span></button>`;
+}
+
 export function renderApp(root: HTMLElement): void {
+  const theme = getStoredTheme();
+
   root.innerHTML = `
     <header class="hero">
       <div class="shell">
-        <h1 class="brand">Git<span>Book</span></h1>
-        <p class="tagline">
-          Complete open-source contribution audit — every PR, issue, and review,
-          not just what GitHub’s activity feed truncates.
-        </p>
+        <div class="topbar">${themeToggleMarkup(theme)}</div>
+        <h1 class="brand">Open<span>Hearth</span></h1>
+        <p class="tagline">${APP_TAGLINE}</p>
 
         <form class="audit-form" id="audit-form" autocomplete="off">
           <div class="form-row">
@@ -93,11 +106,23 @@ export function renderApp(root: HTMLElement): void {
 
     <footer class="footer">
       <div class="shell">
-        <span>GitBook Contribution Audit</span>
+        <span>${APP_NAME} · contribution audit</span>
         <span><a href="https://github.com/Ayush7614/GitBook" target="_blank" rel="noopener">Source</a></span>
       </div>
     </footer>
   `;
+
+  root.querySelector<HTMLButtonElement>("#theme-toggle")?.addEventListener("click", () => {
+    const next = toggleTheme();
+    const btn = root.querySelector<HTMLButtonElement>("#theme-toggle");
+    if (!btn) return;
+    btn.setAttribute("aria-label", themeToggleHint(next));
+    btn.title = themeToggleHint(next);
+    const icon = btn.querySelector(".theme-icon");
+    const label = btn.querySelector(".theme-label");
+    if (icon) icon.textContent = next === "dark" ? "☀" : "☾";
+    if (label) label.textContent = themeLabel(next);
+  });
 
   const form = root.querySelector<HTMLFormElement>("#audit-form")!;
   const usernameInput = root.querySelector<HTMLInputElement>("#username")!;
