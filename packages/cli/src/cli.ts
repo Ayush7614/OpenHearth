@@ -13,7 +13,7 @@ import {
   setAuthToken,
   type AuditKind,
   type DateRange,
-} from "@openhearth/core";
+} from "@felix-ayush/openhearth-core";
 import {
   printAuditSection,
   printBanner,
@@ -61,9 +61,9 @@ Options:
   -h, --help          Show help
 
 Examples:
-  npx openhearth audit Ayush7614 --month 2026-07
-  npx openhearth hidden Ayush7614 --month 2026-07
-  openhearth audit torvalds --from 2026-01-01 --to 2026-01-31 --json report.json
+  npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07
+  npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07
+  npx @felix-ayush/openhearth audit torvalds --from 2026-01-01 --to 2026-01-31 --json report.json
 
 Unique features:
   · Finds ALL repos via Search API (not truncated like github.com activity)

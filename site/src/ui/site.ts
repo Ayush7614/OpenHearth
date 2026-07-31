@@ -60,7 +60,7 @@ export function renderSite(root: HTMLElement): void {
 
         <div class="hero-actions">
           <a href="#install" class="btn btn-primary">Get started</a>
-          <a href="https://www.npmjs.com/package/openhearth" target="_blank" rel="noopener" class="btn btn-ghost">npm</a>
+          <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="btn btn-ghost">npm</a>
         </div>
       </div>
     </header>
@@ -88,25 +88,25 @@ export function renderSite(root: HTMLElement): void {
         <div class="code-block">
           <div class="code-header">
             <span>Full audit</span>
-            <button type="button" class="copy-btn" data-copy="npx openhearth audit Ayush7614 --month 2026-07">Copy</button>
+            <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07">Copy</button>
           </div>
-          <pre><code>npx openhearth audit Ayush7614 --month 2026-07</code></pre>
+          <pre><code>npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07</code></pre>
         </div>
 
         <div class="code-block">
           <div class="code-header">
             <span>Hidden repos report</span>
-            <button type="button" class="copy-btn" data-copy="npx openhearth hidden Ayush7614 --month 2026-07">Copy</button>
+            <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07">Copy</button>
           </div>
-          <pre><code>npx openhearth hidden Ayush7614 --month 2026-07</code></pre>
+          <pre><code>npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07</code></pre>
         </div>
 
         <div class="code-block">
           <div class="code-header">
             <span>Export JSON</span>
-            <button type="button" class="copy-btn" data-copy="npx openhearth audit USER --month 2026-07 --json report.json">Copy</button>
+            <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json">Copy</button>
           </div>
-          <pre><code>npx openhearth audit USER --month 2026-07 --json report.json</code></pre>
+          <pre><code>npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json</code></pre>
         </div>
 
         <p class="hint">

@@ -1,4 +1,4 @@
-import type { AuditResult, AuditInsights, FullAuditResult } from "@openhearth/core";
+import type { AuditResult, AuditInsights, FullAuditResult } from "@felix-ayush/openhearth-core";
 
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`;

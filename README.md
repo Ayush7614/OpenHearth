@@ -23,8 +23,8 @@ npm run build:cli
 npm run openhearth -- audit Ayush7614 --month 2026-07
 
 # After npm publish
-npx openhearth audit Ayush7614 --month 2026-07
-npx openhearth hidden Ayush7614 --month 2026-07
+npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07
+npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07
 ```
 
 Set `GITHUB_TOKEN` for higher rate limits.
@@ -51,8 +51,8 @@ npm run build:site  # builds site/dist for GitHub Pages
 ## Monorepo layout
 
 ```
-packages/core/   @openhearth/core — shared audit engine
-packages/cli/    openhearth — npm CLI
+packages/core/   @felix-ayush/openhearth-core — shared audit engine
+packages/cli/    @felix-ayush/openhearth — npm CLI
 site/            Marketing & docs (GitHub Pages)
 ```
 

@@ -1,31 +1,52 @@
 {
-  "name": "openhearth",
-  "version": "2.0.0",
-  "description": "CLI to audit every GitHub PR, issue, and review — including what the activity feed hides",
+  "name": "@felix-ayush/openhearth",
+  "version": "2.0.1",
+  "description": "CLI to audit every GitHub PR, issue, and review — find repos hidden from your activity feed (\"N repositories not shown\")",
   "type": "module",
   "bin": {
     "openhearth": "./dist/cli.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "github",
+    "github-contributions",
     "contributions",
     "pull-requests",
+    "issues",
+    "code-review",
     "open-source",
+    "oss",
     "audit",
-    "cli"
+    "cli",
+    "developer-tools",
+    "activity-feed",
+    "contribution-graph",
+    "search-api",
+    "openhearth"
   ],
   "license": "MIT",
+  "author": {
+    "name": "Ayush Kumar",
+    "url": "https://github.com/Ayush7614"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ayush7614/OpenHearth.git"
+    "url": "git+https://github.com/Ayush7614/OpenHearth.git",
+    "directory": "packages/cli"
   },
   "homepage": "https://ayush7614.github.io/OpenHearth/",
+  "publishConfig": {
+    "access": "public"
+  },
   "bugs": {
     "url": "https://github.com/Ayush7614/OpenHearth/issues"
   },
@@ -33,7 +54,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@openhearth/core": "2.0.0"
+    "@felix-ayush/openhearth-core": "2.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

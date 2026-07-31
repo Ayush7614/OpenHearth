@@ -1,7 +1,22 @@
 {
-  "name": "@openhearth/core",
-  "version": "2.0.0",
+  "name": "@felix-ayush/openhearth-core",
+  "version": "2.0.1",
+  "description": "GitHub contribution audit engine — Search API pagination, repo aggregation, and activity-feed truncation insights",
   "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "Ayush Kumar",
+    "url": "https://github.com/Ayush7614"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ayush7614/OpenHearth.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://ayush7614.github.io/OpenHearth/",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -10,10 +25,21 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "github",
+    "contributions",
+    "audit",
+    "search-api",
+    "openhearth"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
