@@ -2,6 +2,11 @@
   "name": "openhearth-monorepo",
   "private": true,
   "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ayush7614/OpenHearth.git"
+  },
+  "homepage": "https://ayush7614.github.io/OpenHearth/",
   "workspaces": [
     "packages/*",
     "site"

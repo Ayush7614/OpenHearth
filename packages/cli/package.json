@@ -21,6 +21,14 @@
     "cli"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ayush7614/OpenHearth.git"
+  },
+  "homepage": "https://ayush7614.github.io/OpenHearth/",
+  "bugs": {
+    "url": "https://github.com/Ayush7614/OpenHearth/issues"
+  },
   "engines": {
     "node": ">=20"
   },

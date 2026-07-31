@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/GitBook/",
+  base: "/OpenHearth/",
   build: {
     outDir: "dist",
     emptyOutDir: true,

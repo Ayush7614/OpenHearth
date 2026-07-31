@@ -2,7 +2,7 @@
 
 **CLI tool** to audit every GitHub PR, issue, and review — including repos hidden from your activity feed.
 
-**Website** ([ayush7614.github.io/GitBook](https://ayush7614.github.io/GitBook/)) explains the product. The **npm CLI** does the work.
+**Website** ([ayush7614.github.io/OpenHearth](https://ayush7614.github.io/OpenHearth/)) explains the product. The **npm CLI** does the work.
 
 ## Why OpenHearth?
 

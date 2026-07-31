@@ -47,7 +47,7 @@ export function renderSite(root: HTMLElement): void {
         <nav class="topbar">
           <a href="#install" class="nav-link">Install</a>
           <a href="#features" class="nav-link">Features</a>
-          <a href="https://github.com/Ayush7614/GitBook" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+          <a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener" class="nav-link">GitHub</a>
           ${themeToggleMarkup(theme)}
         </nav>
 
@@ -147,7 +147,7 @@ export function renderSite(root: HTMLElement): void {
     <footer class="footer">
       <div class="shell">
         <span>OpenHearth · CLI on npm · site for docs</span>
-        <span><a href="https://github.com/Ayush7614/GitBook" target="_blank" rel="noopener">Source</a></span>
+        <span><a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener">Source</a></span>
       </div>
     </footer>
   `;
