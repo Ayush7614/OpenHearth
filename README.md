@@ -8,7 +8,8 @@
 
 GitHub’s profile activity truncates heavily (“51 repositories not shown”). Search shows lists; **OpenHearth audits** — with features that don’t exist elsewhere:
 
-- **Browser workspaces** — create a space per user, run audits, track months locally
+- **Browser workspaces** — create spaces, save months, chart trends, share reports, import CLI JSON
+- **Multi-user board** — compare users side by side with month deltas
 - **Ranked hidden repos** — lower-activity repos past the ~25 sidebar cap
 - **Full audit** — PRs + issues + reviews in one command
 - **Doctor + rate-limit UX** — clear fix hints when GitHub throttles you
