@@ -30,22 +30,41 @@ export function printInsights(insights: AuditInsights, rangeLabel: string): void
     console.log(amber("  ⚠ Hidden by activity feed"));
     console.log(
       dim(
-        `  Feed shows ~${insights.reposVisibleOnFeed} repos; Search API found ${insights.uniqueRepos}.`
+        `  Feed shows ~${insights.reposVisibleOnFeed} busiest repos; Search API found ${insights.uniqueRepos}.`
       )
     );
     console.log(
-      dim(`  ~${insights.reposHiddenByFeed} repositories may not appear on your profile sidebar.`)
+      dim(`  ~${insights.reposHiddenByFeed} lower-activity repositories are likely truncated.`)
     );
     console.log("");
   }
 
   if (insights.topRepos.length > 0) {
-    console.log(bold("  Top repositories"));
+    console.log(bold("  Top repositories") + dim(" · likely visible on feed"));
     for (const { repo, count } of insights.topRepos.slice(0, 8)) {
       console.log(`  ${dim("·")} ${repo} ${dim(String(count))}`);
     }
     console.log("");
   }
+}
+
+export function printLikelyHidden(insights: AuditInsights, limit = 20): void {
+  if (insights.likelyHiddenRepos.length === 0) return;
+
+  console.log(
+    bold("  Likely hidden repositories") +
+      dim(` · ${insights.likelyHiddenRepos.length} past the ~${insights.reposVisibleOnFeed} sidebar cap`)
+  );
+  console.log(dim("  Ranked least activity first (most likely truncated)."));
+  console.log("");
+
+  for (const { repo, count } of insights.likelyHiddenRepos.slice(0, limit)) {
+    console.log(`  ${dim("·")} ${repo} ${dim(String(count))}`);
+  }
+  if (insights.likelyHiddenRepos.length > limit) {
+    console.log(dim(`  … and ${insights.likelyHiddenRepos.length - limit} more`));
+  }
+  console.log("");
 }
 
 export function printAuditSection(title: string, result: AuditResult): void {
@@ -71,6 +90,7 @@ export function printAuditSection(title: string, result: AuditResult): void {
 
 export function printFullReport(result: FullAuditResult, rangeLabel: string): void {
   printInsights(result.insights, `@${result.username} · ${rangeLabel}`);
+  printLikelyHidden(result.insights, 12);
   printAuditSection("Pull requests", result.pullRequests);
   printAuditSection("Issues", result.issues);
   printAuditSection("Reviews", result.reviews);
@@ -79,9 +99,54 @@ export function printFullReport(result: FullAuditResult, rangeLabel: string): vo
 }
 
 export function printError(message: string): void {
-  console.error(red(`\n  Error: ${message}\n`));
+  const lines = message.split("\n");
+  console.error("");
+  console.error(red(`  Error: ${lines[0]}`));
+  for (const line of lines.slice(1)) {
+    console.error(line.length ? dim(`  ${line}`) : "");
+  }
+  console.error("");
 }
 
 export function printProgress(message: string): void {
   console.error(dim(`  ${message}`));
+}
+
+function formatReset(reset: number): string {
+  if (!reset) return "unknown";
+  return new Date(reset * 1000).toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+export function printDoctor(report: {
+  version: string;
+  node: string;
+  authenticated: boolean;
+  tokenSource: string;
+  core: { remaining: number; limit: number; reset: number };
+  search: { remaining: number; limit: number; reset: number };
+}): void {
+  printBanner();
+  console.log(bold("  Doctor") + dim(" · environment check"));
+  console.log("");
+  console.log(`  CLI version           ${report.version}`);
+  console.log(`  Node.js               ${report.node}`);
+  console.log(
+    `  Auth                  ${
+      report.authenticated ? green(`yes (${report.tokenSource})`) : amber("no — unauthenticated")
+    }`
+  );
+  console.log("");
+  console.log(bold("  Rate limits"));
+  console.log(
+    `  Core API              ${report.core.remaining}/${report.core.limit}  reset ${formatReset(report.core.reset)}`
+  );
+  console.log(
+    `  Search API            ${report.search.remaining}/${report.search.limit}  reset ${formatReset(report.search.reset)}`
+  );
+  console.log("");
+  if (!report.authenticated) {
+    console.log(amber("  Tip: export GITHUB_TOKEN=… before running audits."));
+    console.log(dim("  https://github.com/settings/tokens"));
+    console.log("");
+  }
 }

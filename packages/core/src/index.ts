@@ -1,6 +1,7 @@
 export {
   ACTIVITY_FEED_REPO_CAP,
   GitHubApiError,
+  checkRateLimit,
   getAuthToken,
   getRateLimit,
   repoFullNameFromUrl,
@@ -37,6 +38,7 @@ export {
   runFullAudit,
   type AuditInsights,
   type FullAuditResult,
+  type RepoCount,
 } from "./insights.js";
 
 export {

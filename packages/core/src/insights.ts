@@ -2,13 +2,21 @@ import { ACTIVITY_FEED_REPO_CAP } from "./github.js";
 import type { AuditResult, ContributionItem } from "./aggregate.js";
 import type { DateRange } from "./queries.js";
 
+export type RepoCount = { repo: string; count: number };
+
 export type AuditInsights = {
   totalContributions: number;
   uniqueRepos: number;
   reposVisibleOnFeed: number;
   reposHiddenByFeed: number;
   feedTruncationNote: string;
-  topRepos: { repo: string; count: number }[];
+  /** Highest-activity repos — most likely to appear on the activity sidebar. */
+  topRepos: RepoCount[];
+  /**
+   * Lowest-activity repos beyond the ~25 sidebar cap — most likely truncated
+   * as “N repositories not shown.” Ranked least → most activity.
+   */
+  likelyHiddenRepos: RepoCount[];
   busiestDay: string | null;
   mergeRate: number;
   byKind: { pr: number; issue: number; review: number };
@@ -61,10 +69,22 @@ export function buildInsights(
   const reposHiddenByFeed = Math.max(0, uniqueRepos - ACTIVITY_FEED_REPO_CAP);
   const reposVisibleOnFeed = Math.min(uniqueRepos, ACTIVITY_FEED_REPO_CAP);
 
-  const topRepos = [...repoTotals.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([repo, count]) => ({ repo, count }));
+  // Activity sidebar favors busier repos; rank by contribution count desc.
+  const ranked = [...repoTotals.entries()].sort((a, b) => {
+    if (b[1] !== a[1]) return b[1] - a[1];
+    return a[0].localeCompare(b[0]);
+  });
+
+  const topRepos = ranked.slice(0, 10).map(([repo, count]) => ({ repo, count }));
+
+  // Repos past the ~25 visible slots are the ones most likely truncated.
+  const likelyHiddenRepos = ranked
+    .slice(ACTIVITY_FEED_REPO_CAP)
+    .map(([repo, count]) => ({ repo, count }))
+    .sort((a, b) => {
+      if (a.count !== b.count) return a.count - b.count;
+      return a.repo.localeCompare(b.repo);
+    });
 
   const merged = pr.items.filter((i) => i.state === "merged").length;
   const mergeRate = pr.total > 0 ? Math.round((merged / pr.total) * 100) : 0;
@@ -72,8 +92,9 @@ export function buildInsights(
   let feedTruncationNote = "Activity feed likely shows all repos for this range.";
   if (reposHiddenByFeed > 0) {
     feedTruncationNote =
-      `GitHub's activity sidebar typically lists ~${ACTIVITY_FEED_REPO_CAP} repos before "N repositories not shown". ` +
-      `Search API found ${uniqueRepos} repos — about ${reposHiddenByFeed} may be hidden on your profile feed.`;
+      `GitHub's activity sidebar typically lists ~${ACTIVITY_FEED_REPO_CAP} busiest repos before "N repositories not shown". ` +
+      `Search API found ${uniqueRepos} repos — about ${reposHiddenByFeed} lower-activity repos are likely hidden. ` +
+      `Listed below as “likely hidden” (least activity first).`;
   }
 
   return {
@@ -83,6 +104,7 @@ export function buildInsights(
     reposHiddenByFeed,
     feedTruncationNote,
     topRepos,
+    likelyHiddenRepos,
     busiestDay: busiestDay(allItems),
     mergeRate,
     byKind: { pr: pr.total, issue: issue.total, review: review.total },

@@ -68,6 +68,31 @@ export class GitHubApiError extends Error {
   }
 }
 
+function formatRateLimitHint(): string {
+  const hasToken = Boolean(getAuthToken());
+  const { remaining, limit, reset } = lastRateLimit;
+  const lines: string[] = [];
+
+  if (!hasToken) {
+    lines.push(
+      "Unauthenticated Search API is limited (~60 requests/hour).",
+      "Set GITHUB_TOKEN or pass --token for ~5,000 requests/hour.",
+      "Create a token: https://github.com/settings/tokens",
+      "Then: export GITHUB_TOKEN=YOUR_TOKEN"
+    );
+  } else if (reset > 0) {
+    const resetAt = new Date(reset * 1000).toISOString().replace(/\.\d{3}Z$/, "Z");
+    const quota =
+      remaining >= 0 && limit > 0 ? `${remaining}/${limit} remaining` : "quota exhausted";
+    lines.push(`Authenticated rate limit: ${quota}. Resets at ${resetAt}.`);
+    lines.push("Wait for the reset, or retry with openhearth doctor to check status.");
+  } else {
+    lines.push("Set GITHUB_TOKEN or pass --token, then retry.");
+  }
+
+  return lines.map((l) => `  ${l}`).join("\n");
+}
+
 async function githubFetch(url: string): Promise<Response> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
@@ -83,10 +108,9 @@ async function githubFetch(url: string): Promise<Response> {
 
   if (res.status === 403 || res.status === 429) {
     const body = await res.json().catch(() => ({}));
-    const msg =
-      (body as { message?: string }).message ??
-      "GitHub rate limit exceeded. Set GITHUB_TOKEN and try again.";
-    throw new GitHubApiError(msg, res.status);
+    const apiMsg =
+      (body as { message?: string }).message ?? "GitHub rate limit exceeded.";
+    throw new GitHubApiError(`${apiMsg}\n\n${formatRateLimitHint()}`, res.status);
   }
 
   if (!res.ok) {
@@ -97,6 +121,34 @@ async function githubFetch(url: string): Promise<Response> {
   }
 
   return res;
+}
+
+/** Probe GitHub /rate_limit (does not consume search quota meaningfully). */
+export async function checkRateLimit(): Promise<{
+  authenticated: boolean;
+  core: RateLimitInfo;
+  search: RateLimitInfo;
+}> {
+  const res = await githubFetch("https://api.github.com/rate_limit");
+  const data = (await res.json()) as {
+    resources: {
+      core: { remaining: number; limit: number; reset: number };
+      search: { remaining: number; limit: number; reset: number };
+    };
+  };
+  return {
+    authenticated: Boolean(getAuthToken()),
+    core: {
+      remaining: data.resources.core.remaining,
+      limit: data.resources.core.limit,
+      reset: data.resources.core.reset,
+    },
+    search: {
+      remaining: data.resources.search.remaining,
+      limit: data.resources.search.limit,
+      reset: data.resources.search.reset,
+    },
+  };
 }
 
 export async function searchIssuesPage(

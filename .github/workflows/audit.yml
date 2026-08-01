@@ -1,0 +1,85 @@
+name: Contribution Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: GitHub username to audit
+        required: true
+        type: string
+      month:
+        description: Month to audit (YYYY-MM). Leave empty for previous calendar month.
+        required: false
+        type: string
+  schedule:
+    # 1st of each month at 12:00 UTC — audits the previous month
+    - cron: "0 12 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build CLI
+        run: npm run build:cli
+
+      - name: Resolve username + month
+        id: meta
+        env:
+          INPUT_USER: ${{ inputs.username }}
+          INPUT_MONTH: ${{ inputs.month }}
+        run: |
+          USERNAME="${INPUT_USER:-${{ github.repository_owner }}}"
+          if [ -n "$INPUT_MONTH" ]; then
+            MONTH="$INPUT_MONTH"
+          else
+            # Previous calendar month (UTC)
+            MONTH="$(date -u -d "$(date -u +%Y-%m-01) -1 day" +%Y-%m)"
+          fi
+          echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
+          echo "month=$MONTH" >> "$GITHUB_OUTPUT"
+          echo "Auditing @$USERNAME for $MONTH"
+
+      - name: Doctor
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run openhearth -- doctor
+
+      - name: Run audit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p audit-out
+          npm run openhearth -- audit "${{ steps.meta.outputs.username }}" \
+            --month "${{ steps.meta.outputs.month }}" \
+            --json "audit-out/audit-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}.json" \
+            --csv "audit-out/audit-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}.csv"
+
+      - name: Hidden repos report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run openhearth -- hidden "${{ steps.meta.outputs.username }}" \
+            --month "${{ steps.meta.outputs.month }}" \
+            --json "audit-out/hidden-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}.json"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openhearth-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}
+          path: audit-out/
+          if-no-files-found: error
