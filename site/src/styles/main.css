@@ -802,3 +802,59 @@ a:hover {
     gap: 0.35rem;
   }
 }
+
+/* —— Terminal demo —— */
+.terminal {
+  margin-top: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: rise 0.7s ease 0.15s both;
+}
+
+.terminal-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-elevated);
+}
+
+.terminal-chrome span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  opacity: 0.55;
+}
+
+.terminal-chrome span:nth-child(1) { background: #e07a6a; opacity: 0.85; }
+.terminal-chrome span:nth-child(2) { background: #e8c06a; opacity: 0.85; }
+.terminal-chrome span:nth-child(3) { background: #7aab7a; opacity: 0.85; }
+
+.terminal-chrome em {
+  margin-left: 0.6rem;
+  font-style: normal;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.terminal-body {
+  margin: 0;
+  padding: 1.1rem 1.2rem 1.35rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.terminal-body .t-bold { color: var(--ink); font-weight: 600; }
+.terminal-body .t-dim { color: var(--ink-faint); }
+.terminal-body .t-warn { color: var(--warn); font-weight: 600; }

@@ -8,8 +8,8 @@ import {
 
 const FEATURES = [
   {
-    title: "Hidden repo detection",
-    body: "Estimates how many repositories GitHub’s activity sidebar hides behind “N repositories not shown.”",
+    title: "Ranked hidden repos",
+    body: "Lists lower-activity repos past the ~25 sidebar cap — the ones most likely behind “N repositories not shown.”",
   },
   {
     title: "Full Search API inventory",
@@ -20,16 +20,16 @@ const FEATURES = [
     body: "When a month exceeds GitHub’s 1000-result search cap, splits the range automatically.",
   },
   {
-    title: "One-command full audit",
-    body: "PRs, issues, and reviews together with merge rate, busiest day, and top repos.",
+    title: "Doctor + clear rate limits",
+    body: "openhearth doctor checks auth and Search API quota. Rate-limit errors tell you exactly how to fix them.",
+  },
+  {
+    title: "GitHub Action",
+    body: "Monthly or on-demand audits that upload JSON/CSV artifacts — no laptop required.",
   },
   {
     title: "JSON & CSV export",
     body: "Pipe results into spreadsheets, dashboards, or your own tooling.",
-  },
-  {
-    title: "Nothing like it",
-    body: "GitHub search shows lists; OpenHearth audits, compares against the feed, and reports what’s missing.",
   },
 ];
 
@@ -46,6 +46,7 @@ export function renderSite(root: HTMLElement): void {
       <div class="shell">
         <nav class="topbar">
           <a href="#install" class="nav-link">Install</a>
+          <a href="#demo" class="nav-link">Demo</a>
           <a href="#features" class="nav-link">Features</a>
           <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="nav-link">npm</a>
           <a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener" class="nav-link">GitHub</a>
@@ -66,6 +67,36 @@ export function renderSite(root: HTMLElement): void {
         </div>
       </div>
     </header>
+
+    <section class="section" id="demo">
+      <div class="shell">
+        <h2>What it looks like</h2>
+        <p class="muted">Sample terminal output from a monthly audit.</p>
+        <div class="terminal" role="img" aria-label="Sample OpenHearth CLI output">
+          <div class="terminal-chrome">
+            <span></span><span></span><span></span>
+            <em>openhearth · audit</em>
+          </div>
+          <pre class="terminal-body"><code><span class="t-dim">$</span> npx @felix-ayush/openhearth hidden USER --month 2026-07
+
+<span class="t-bold">OpenHearth</span> <span class="t-dim">· contribution audit</span>
+
+<span class="t-bold">Summary</span> <span class="t-dim">· @USER · 2026-07</span>
+Total contributions   <span class="t-bold">494</span>
+Unique repositories   <span class="t-bold">78</span>
+PR merge rate         <span class="t-bold">51%</span>
+
+<span class="t-warn">⚠ Hidden by activity feed</span>
+Feed shows ~25 busiest repos; Search API found 78.
+~53 lower-activity repositories are likely truncated.
+
+<span class="t-bold">Likely hidden repositories</span> <span class="t-dim">· least activity first</span>
+· small-org/side-project 1
+· another/low-activity 2
+· … and 51 more</code></pre>
+        </div>
+      </div>
+    </section>
 
     <section class="section problem">
       <div class="shell">
@@ -107,19 +138,19 @@ export function renderSite(root: HTMLElement): void {
 
         <div class="code-block">
           <div class="code-header">
+            <span>Check auth &amp; rate limits</span>
+            <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth doctor">Copy</button>
+          </div>
+          <pre><code>npx @felix-ayush/openhearth doctor</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
             <span>Global install</span>
             <button type="button" class="copy-btn" data-copy="npm install -g @felix-ayush/openhearth">Copy</button>
           </div>
           <pre><code>npm install -g @felix-ayush/openhearth
 openhearth audit USERNAME --month 2026-07</code></pre>
-        </div>
-
-        <div class="code-block">
-          <div class="code-header">
-            <span>Export JSON</span>
-            <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json">Copy</button>
-          </div>
-          <pre><code>npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json</code></pre>
         </div>
       </div>
     </section>
@@ -141,7 +172,28 @@ npx @felix-ayush/openhearth audit USERNAME --month 2026-07</code></pre>
         </div>
         <p class="hint">
           Classic or fine-grained PAT with public repository read is enough. Never commit or paste tokens into chat.
+          If you hit a limit, the CLI explains how to fix it — or run <code>openhearth doctor</code>.
         </p>
+      </div>
+    </section>
+
+    <section class="section" id="action">
+      <div class="shell">
+        <h2>GitHub Action</h2>
+        <p class="muted">
+          This repo ships a <strong>Contribution Audit</strong> workflow — run on demand or on a monthly schedule.
+          It uploads JSON/CSV artifacts for the chosen user and month.
+        </p>
+        <div class="code-block">
+          <div class="code-header">
+            <span>Actions → Contribution Audit → Run workflow</span>
+          </div>
+          <pre><code># workflow_dispatch inputs:
+#   username  (defaults to repository owner)
+#   month     (YYYY-MM, defaults to previous month)
+
+# Or wait for the 1st-of-month cron schedule</code></pre>
+        </div>
       </div>
     </section>
 
@@ -165,12 +217,14 @@ npx @felix-ayush/openhearth audit USERNAME --month 2026-07</code></pre>
         <h2>CLI reference</h2>
         <div class="ref-table">
           <div class="ref-row"><code>openhearth audit &lt;user&gt;</code><span>Full PR + issue + review audit</span></div>
-          <div class="ref-row"><code>openhearth hidden &lt;user&gt;</code><span>Quick hidden-repo report</span></div>
+          <div class="ref-row"><code>openhearth hidden &lt;user&gt;</code><span>Ranked likely-hidden repos</span></div>
+          <div class="ref-row"><code>openhearth doctor</code><span>Auth + rate-limit check</span></div>
           <div class="ref-row"><code>--month YYYY-MM</code><span>Audit a calendar month</span></div>
           <div class="ref-row"><code>--from / --to</code><span>Custom date range</span></div>
           <div class="ref-row"><code>--kind pr|issue|review|all</code><span>Filter by contribution type</span></div>
           <div class="ref-row"><code>--token TOKEN</code><span>GitHub PAT (or GITHUB_TOKEN env)</span></div>
           <div class="ref-row"><code>--json / --csv</code><span>Export results</span></div>
+          <div class="ref-row"><code>-V, --version</code><span>Print CLI version</span></div>
         </div>
       </div>
     </section>

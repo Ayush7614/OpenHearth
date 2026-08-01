@@ -1,10 +1,15 @@
+import { readFileSync } from "node:fs";
 import { writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import {
   APP_NAME,
   auditToCsv,
   auditToJson,
+  checkRateLimit,
   fullAuditToCsv,
   fullAuditToJson,
+  getAuthToken,
   parseMonth,
   runAudit,
   runFullAudit,
@@ -15,9 +20,11 @@ import {
 import {
   printAuditSection,
   printBanner,
+  printDoctor,
   printError,
   printFullReport,
   printInsights,
+  printLikelyHidden,
   printProgress,
 } from "./format.js";
 
@@ -33,7 +40,26 @@ type CliOptions = {
   quiet: boolean;
   hidden: boolean;
   help: boolean;
+  version: boolean;
+  doctor: boolean;
 };
+
+function cliVersion(): string {
+  // Injected by esbuild define when bundled; fallback for tsx/dev.
+  const injected = typeof __OPENHEARTH_VERSION__ !== "undefined" ? __OPENHEARTH_VERSION__ : "";
+  if (injected) return injected;
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(readFileSync(join(here, "..", "package.json"), "utf8")) as {
+      version: string;
+    };
+    return pkg.version;
+  } catch {
+    return "0.0.0";
+  }
+}
+
+declare const __OPENHEARTH_VERSION__: string;
 
 function usage(): string {
   return `
@@ -42,10 +68,13 @@ ${APP_NAME} — audit GitHub contributions the activity feed hides
 Usage:
   openhearth audit <username> [options]
   openhearth hidden <username> [options]
+  openhearth doctor
+  openhearth --version
 
 Commands:
   audit     Full PR + issue + review audit (default)
-  hidden    Quick report: repos hidden from the activity sidebar
+  hidden    Hidden-repo report vs activity sidebar (ranked)
+  doctor    Check auth + GitHub rate-limit status
 
 Options:
   --month YYYY-MM     Audit a calendar month (e.g. 2026-07)
@@ -56,16 +85,18 @@ Options:
   --json [file]       Export JSON (stdout if no file)
   --csv [file]        Export CSV (stdout if no file)
   --quiet             Minimal output
+  -V, --version       Print CLI version
   -h, --help          Show help
 
 Examples:
   npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07
   npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07
+  npx @felix-ayush/openhearth doctor
   npx @felix-ayush/openhearth audit torvalds --from 2026-01-01 --to 2026-01-31 --json report.json
 
 Unique features:
   · Finds ALL repos via Search API (not truncated like github.com activity)
-  · Reports how many repos the profile sidebar likely hides
+  · Ranks likely-hidden repos (lowest activity past the ~25 sidebar cap)
   · Auto-splits date ranges past GitHub's 1000-result search cap
   · Full audit: PRs + issues + reviews in one run
 `;
@@ -79,6 +110,8 @@ function parseArgs(argv: string[]): CliOptions & { command: string } {
     quiet: false,
     hidden: false,
     help: false,
+    version: false,
+    doctor: false,
   };
 
   const positional: string[] = [];
@@ -87,6 +120,10 @@ function parseArgs(argv: string[]): CliOptions & { command: string } {
     const arg = argv[i];
     if (arg === "-h" || arg === "--help") {
       opts.help = true;
+      continue;
+    }
+    if (arg === "-V" || arg === "--version") {
+      opts.version = true;
       continue;
     }
     if (arg === "--quiet") {
@@ -126,10 +163,11 @@ function parseArgs(argv: string[]): CliOptions & { command: string } {
     }
   }
 
-  if (positional[0] === "audit" || positional[0] === "hidden") {
+  if (positional[0] === "audit" || positional[0] === "hidden" || positional[0] === "doctor") {
     opts.command = positional[0];
     opts.username = (positional[1] ?? "").replace(/^@/, "");
     if (opts.command === "hidden") opts.hidden = true;
+    if (opts.command === "doctor") opts.doctor = true;
   } else {
     opts.username = (positional[0] ?? "").replace(/^@/, "");
   }
@@ -164,15 +202,53 @@ function writeOutput(content: string, path?: string): void {
   console.error(`  Wrote ${path}`);
 }
 
+function tokenSourceLabel(): string {
+  if (process.env.GITHUB_TOKEN) return "GITHUB_TOKEN";
+  if (process.env.GH_TOKEN) return "GH_TOKEN";
+  return "--token";
+}
+
+async function runDoctor(): Promise<void> {
+  const status = await checkRateLimit();
+  printDoctor({
+    version: cliVersion(),
+    node: process.version,
+    authenticated: status.authenticated,
+    tokenSource: status.authenticated ? tokenSourceLabel() : "none",
+    core: status.core,
+    search: status.search,
+  });
+}
+
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
 
-  if (opts.help || !opts.username) {
+  if (opts.version) {
+    console.log(cliVersion());
+    process.exit(0);
+  }
+
+  if (opts.help) {
     console.log(usage());
-    process.exit(opts.help ? 0 : 1);
+    process.exit(0);
   }
 
   if (opts.token) setAuthToken(opts.token);
+
+  if (opts.doctor || opts.command === "doctor") {
+    try {
+      await runDoctor();
+    } catch (err) {
+      printError(err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (!opts.username) {
+    console.log(usage());
+    process.exit(1);
+  }
 
   const range = resolveRange(opts);
   const label = rangeLabel(range, opts.month);
@@ -185,9 +261,11 @@ async function main(): Promise<void> {
       const full = await runFullAudit(opts.username, range, runAudit, onProgress);
       if (!opts.quiet) {
         printInsights(full.insights, `@${opts.username} · ${label}`);
+        printLikelyHidden(full.insights);
         console.log(`  ${full.insights.feedTruncationNote}\n`);
       }
       if (opts.json) writeOutput(fullAuditToJson(full), opts.json);
+      if (opts.csv) writeOutput(fullAuditToCsv(full), opts.csv);
       return;
     }
 
@@ -216,6 +294,9 @@ async function main(): Promise<void> {
     }
   } catch (err) {
     printError(err instanceof Error ? err.message : String(err));
+    if (!getAuthToken()) {
+      printProgress("Hint: run `openhearth doctor` after setting GITHUB_TOKEN.");
+    }
     process.exit(1);
   }
 }
