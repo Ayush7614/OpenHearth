@@ -37,7 +37,11 @@ export function setAuthToken(token: string): void {
 }
 
 export function getAuthToken(): string {
-  return authToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
+  if (authToken) return authToken;
+  if (typeof process !== "undefined" && process.env) {
+    return process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
+  }
+  return "";
 }
 
 let lastRateLimit: RateLimitInfo = {

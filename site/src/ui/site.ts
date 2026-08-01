@@ -8,6 +8,10 @@ import {
 
 const FEATURES = [
   {
+    title: "Browser workspaces",
+    body: "Create a workspace per user, run audits in the browser, and track month-over-month totals and hidden repos locally.",
+  },
+  {
     title: "Ranked hidden repos",
     body: "Lists lower-activity repos past the ~25 sidebar cap — the ones most likely behind “N repositories not shown.”",
   },
@@ -24,12 +28,8 @@ const FEATURES = [
     body: "openhearth doctor checks auth and Search API quota. Rate-limit errors tell you exactly how to fix them.",
   },
   {
-    title: "GitHub Action",
-    body: "Monthly or on-demand audits that upload JSON/CSV artifacts — no laptop required.",
-  },
-  {
-    title: "JSON & CSV export",
-    body: "Pipe results into spreadsheets, dashboards, or your own tooling.",
+    title: "CLI + GitHub Action",
+    body: "Same engine in the terminal and in CI — monthly artifacts when you want automation.",
   },
 ];
 
@@ -45,6 +45,7 @@ export function renderSite(root: HTMLElement): void {
     <header class="hero">
       <div class="shell">
         <nav class="topbar">
+          <a href="#/app" class="nav-link">Workspaces</a>
           <a href="#install" class="nav-link">Install</a>
           <a href="#demo" class="nav-link">Demo</a>
           <a href="#features" class="nav-link">Features</a>
@@ -53,17 +54,17 @@ export function renderSite(root: HTMLElement): void {
           ${themeToggleMarkup(theme)}
         </nav>
 
-        <p class="eyebrow">CLI on npm · this site is docs only</p>
+        <p class="eyebrow">CLI + browser workspaces · track what the feed hides</p>
         <h1 class="brand">Open<span>Hearth</span></h1>
         <p class="tagline">
-          GitHub’s activity feed truncates your work. OpenHearth is a
-          <strong>terminal CLI</strong> that queries the Search API and reports what your
-          profile sidebar hides. There is no web audit app — install the package and run it.
+          GitHub’s activity feed truncates your work. OpenHearth audits via
+          <strong>CLI or browser workspaces</strong> — same Search API engine,
+          saved month-over-month so you can track everything.
         </p>
 
         <div class="hero-actions">
-          <a href="#install" class="btn btn-primary">Install the CLI</a>
-          <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="btn btn-ghost">@felix-ayush/openhearth</a>
+          <a href="#/app" class="btn btn-primary">Open workspaces</a>
+          <a href="#install" class="btn btn-ghost">CLI install</a>
         </div>
       </div>
     </header>
@@ -107,8 +108,8 @@ Feed shows ~25 busiest repos; Search API found 78.
           sidebar were never meant as a complete ledger — especially after the AI-era OSS boom.
         </p>
         <p class="muted">
-          This website only explains the product. The real tool is
-          <code>@felix-ayush/openhearth</code> on npm.
+          Use the <a href="#/app">workspace UI</a> in the browser, or the CLI
+          <code>@felix-ayush/openhearth</code> on npm — both share the same audit engine.
         </p>
       </div>
     </section>
@@ -117,7 +118,7 @@ Feed shows ~25 busiest repos; Search API found 78.
       <div class="shell">
         <h2>Install &amp; run</h2>
         <p class="muted">
-          One package: <code>@felix-ayush/openhearth</code>. Node 20+. No browser UI.
+          Browser <a href="#/app">workspaces</a> or CLI package <code>@felix-ayush/openhearth</code>. Node 20+ for the CLI.
         </p>
 
         <div class="code-block">
@@ -231,7 +232,7 @@ npx @felix-ayush/openhearth audit USERNAME --month 2026-07</code></pre>
 
     <footer class="footer">
       <div class="shell">
-        <span>OpenHearth · <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener">@felix-ayush/openhearth</a> · docs site only</span>
+        <span>OpenHearth · <a href="#/app">workspaces</a> · <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener">CLI</a></span>
         <span><a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener">Source</a></span>
       </div>
     </footer>
