@@ -47,20 +47,22 @@ export function renderSite(root: HTMLElement): void {
         <nav class="topbar">
           <a href="#install" class="nav-link">Install</a>
           <a href="#features" class="nav-link">Features</a>
+          <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="nav-link">npm</a>
           <a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener" class="nav-link">GitHub</a>
           ${themeToggleMarkup(theme)}
         </nav>
 
-        <p class="eyebrow">Open-source contribution audit</p>
+        <p class="eyebrow">CLI on npm · this site is docs only</p>
         <h1 class="brand">Open<span>Hearth</span></h1>
         <p class="tagline">
-          GitHub’s activity feed truncates your work. OpenHearth finds <em>everything</em> —
-          via a CLI that queries the Search API and reports what your profile sidebar hides.
+          GitHub’s activity feed truncates your work. OpenHearth is a
+          <strong>terminal CLI</strong> that queries the Search API and reports what your
+          profile sidebar hides. There is no web audit app — install the package and run it.
         </p>
 
         <div class="hero-actions">
-          <a href="#install" class="btn btn-primary">Get started</a>
-          <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="btn btn-ghost">npm</a>
+          <a href="#install" class="btn btn-primary">Install the CLI</a>
+          <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="btn btn-ghost">@felix-ayush/openhearth</a>
         </div>
       </div>
     </header>
@@ -74,20 +76,22 @@ export function renderSite(root: HTMLElement): void {
           sidebar were never meant as a complete ledger — especially after the AI-era OSS boom.
         </p>
         <p class="muted">
-          OpenHearth runs where developers already work: your terminal. The website explains the
-          tool; the CLI does the audit.
+          This website only explains the product. The real tool is
+          <code>@felix-ayush/openhearth</code> on npm.
         </p>
       </div>
     </section>
 
     <section class="section" id="install">
       <div class="shell">
-        <h2>Install & run</h2>
-        <p class="muted">No global install required. Node 20+ recommended.</p>
+        <h2>Install &amp; run</h2>
+        <p class="muted">
+          One package: <code>@felix-ayush/openhearth</code>. Node 20+. No browser UI.
+        </p>
 
         <div class="code-block">
           <div class="code-header">
-            <span>Full audit</span>
+            <span>Run without installing</span>
             <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07">Copy</button>
           </div>
           <pre><code>npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07</code></pre>
@@ -103,14 +107,40 @@ export function renderSite(root: HTMLElement): void {
 
         <div class="code-block">
           <div class="code-header">
+            <span>Global install</span>
+            <button type="button" class="copy-btn" data-copy="npm install -g @felix-ayush/openhearth">Copy</button>
+          </div>
+          <pre><code>npm install -g @felix-ayush/openhearth
+openhearth audit USERNAME --month 2026-07</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
             <span>Export JSON</span>
             <button type="button" class="copy-btn" data-copy="npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json">Copy</button>
           </div>
           <pre><code>npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json</code></pre>
         </div>
+      </div>
+    </section>
 
+    <section class="section" id="auth">
+      <div class="shell">
+        <h2>Authentication</h2>
+        <p>
+          Without a token, GitHub’s unauthenticated Search API rate-limits quickly (~60 requests/hour).
+          Set a PAT so audits and back-to-back commands finish reliably:
+        </p>
+        <div class="code-block">
+          <div class="code-header">
+            <span>Recommended</span>
+            <button type="button" class="copy-btn" data-copy="export GITHUB_TOKEN=YOUR_TOKEN_HERE">Copy</button>
+          </div>
+          <pre><code>export GITHUB_TOKEN=YOUR_TOKEN_HERE
+npx @felix-ayush/openhearth audit USERNAME --month 2026-07</code></pre>
+        </div>
         <p class="hint">
-          Set <code>GITHUB_TOKEN</code> for higher rate limits. Classic PAT with public read is enough.
+          Classic or fine-grained PAT with public repository read is enough. Never commit or paste tokens into chat.
         </p>
       </div>
     </section>
@@ -139,6 +169,7 @@ export function renderSite(root: HTMLElement): void {
           <div class="ref-row"><code>--month YYYY-MM</code><span>Audit a calendar month</span></div>
           <div class="ref-row"><code>--from / --to</code><span>Custom date range</span></div>
           <div class="ref-row"><code>--kind pr|issue|review|all</code><span>Filter by contribution type</span></div>
+          <div class="ref-row"><code>--token TOKEN</code><span>GitHub PAT (or GITHUB_TOKEN env)</span></div>
           <div class="ref-row"><code>--json / --csv</code><span>Export results</span></div>
         </div>
       </div>
@@ -146,7 +177,7 @@ export function renderSite(root: HTMLElement): void {
 
     <footer class="footer">
       <div class="shell">
-        <span>OpenHearth · CLI on npm · site for docs</span>
+        <span>OpenHearth · <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener">@felix-ayush/openhearth</a> · docs site only</span>
         <span><a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener">Source</a></span>
       </div>
     </footer>

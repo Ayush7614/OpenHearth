@@ -1,8 +1,8 @@
 {
   "name": "@felix-ayush/openhearth-core",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
-  "description": "GitHub contribution audit engine — Search API pagination, repo aggregation, and activity-feed truncation insights",
+  "description": "Internal audit engine — bundled into @felix-ayush/openhearth (not published).",
   "type": "module",
   "license": "MIT",
   "author": {

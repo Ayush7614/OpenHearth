@@ -51,10 +51,13 @@ npm run build:site  # builds site/dist for GitHub Pages
 ## Monorepo layout
 
 ```
-packages/core/   @felix-ayush/openhearth-core — internal audit engine (not published)
-packages/cli/    @felix-ayush/openhearth — npm CLI (bundles core)
+packages/core/   Internal audit engine (bundled into the CLI — not published)
+packages/cli/    @felix-ayush/openhearth — the only npm package users should install
 site/            Marketing & docs (GitHub Pages)
 ```
+
+> Note: an early `@felix-ayush/openhearth-core` publish was removed from npm.
+> Install `@felix-ayush/openhearth` only.
 
 ## Publish CLI to npm
 
