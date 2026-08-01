@@ -30,8 +30,10 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build site
-        run: npm run build:site
+      - name: Build core + site
+        run: |
+          npm run build -w @felix-ayush/openhearth-core
+          npm run build:site
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

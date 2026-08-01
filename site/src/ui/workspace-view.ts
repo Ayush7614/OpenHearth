@@ -72,6 +72,8 @@ function labelFor(kind: AuditKind): string {
       return "Issues";
     case "review":
       return "Reviews";
+    default:
+      return "Items";
   }
 }
 
