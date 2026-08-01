@@ -15,9 +15,6 @@
     "directory": "packages/core"
   },
   "homepage": "https://ayush7614.github.io/OpenHearth/",
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
