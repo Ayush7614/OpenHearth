@@ -9,11 +9,11 @@ import {
 const FEATURES = [
   {
     title: "Browser workspaces",
-    body: "Create a workspace per user, run audits in the browser, and track month-over-month totals and hidden repos locally.",
+    body: "Create spaces per user, save months, chart trends, share reports, and import CLI JSON — all local in your browser.",
   },
   {
-    title: "Ranked hidden repos",
-    body: "Lists lower-activity repos past the ~25 sidebar cap — the ones most likely behind “N repositories not shown.”",
+    title: "Multi-user board",
+    body: "Compare every workspace side by side with latest totals and month-over-month deltas.",
   },
   {
     title: "Full Search API inventory",
@@ -46,6 +46,7 @@ export function renderSite(root: HTMLElement): void {
       <div class="shell">
         <nav class="topbar">
           <a href="#/app" class="nav-link">Workspaces</a>
+          <a href="#/app/board" class="nav-link">Board</a>
           <a href="#install" class="nav-link">Install</a>
           <a href="#demo" class="nav-link">Demo</a>
           <a href="#features" class="nav-link">Features</a>
