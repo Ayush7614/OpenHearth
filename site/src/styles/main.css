@@ -858,3 +858,225 @@ a:hover {
 .terminal-body .t-bold { color: var(--ink); font-weight: 600; }
 .terminal-body .t-dim { color: var(--ink-faint); }
 .terminal-body .t-warn { color: var(--warn); font-weight: 600; }
+
+/* —— App / workspaces —— */
+.app-top {
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.app-top-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+}
+
+.brand-mini {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.brand-mini span {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem 0.85rem;
+  flex-wrap: wrap;
+}
+
+.app-nav .nav-link.active {
+  color: var(--accent);
+}
+
+.app-main {
+  padding: 2rem 0 4rem;
+  animation: rise 0.55s ease both;
+}
+
+.app-heading {
+  margin-bottom: 1.5rem;
+}
+
+.app-heading h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  margin: 0.15rem 0 0.4rem;
+  line-height: 1.1;
+}
+
+.app-heading .eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.app-heading .eyebrow a {
+  color: inherit;
+}
+
+.ws-create {
+  margin-bottom: 2rem;
+}
+
+.ws-create-row {
+  grid-template-columns: 1.2fr 1fr auto;
+}
+
+@media (max-width: 720px) {
+  .ws-create-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.ws-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--repo-bg);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.ws-card:hover {
+  border-color: var(--repo-hover-border);
+}
+
+.ws-card-main {
+  display: block;
+  padding: 1.15rem 1.2rem 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  flex: 1;
+}
+
+.ws-card-main h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+
+.ws-meta {
+  margin: 0.15rem 0;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.ws-card .ws-delete {
+  margin: 0 1rem 1rem;
+  align-self: flex-start;
+}
+
+.insight-banner {
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, var(--line));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--warn) 8%, var(--bg-elevated));
+}
+
+.insight-banner strong {
+  color: var(--warn);
+}
+
+.insight-banner p {
+  margin: 0.4rem 0 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.hidden-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.hidden-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+}
+
+.hidden-list a {
+  color: var(--ink);
+}
+
+.hidden-list span {
+  color: var(--ink-faint);
+}
+
+.tab-headline {
+  margin: 0 0 1rem;
+  color: var(--ink-muted);
+}
+
+.track-section {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.track-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  margin: 0 0 0.35rem;
+}
+
+.track-wrap {
+  margin-top: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.track-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.track-table th,
+.track-table td {
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.track-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  background: var(--bg-elevated);
+}
+
+.track-table tr:last-child td {
+  border-bottom: none;
+}

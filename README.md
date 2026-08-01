@@ -2,12 +2,13 @@
 
 **CLI tool** to audit every GitHub PR, issue, and review — including repos hidden from your activity feed.
 
-**Website** ([ayush7614.github.io/OpenHearth](https://ayush7614.github.io/OpenHearth/)) explains the product. The **npm CLI** does the work.
+**Website** ([ayush7614.github.io/OpenHearth](https://ayush7614.github.io/OpenHearth/)) has **docs + browser workspaces**. The **npm CLI** does the same audit in your terminal.
 
 ## Why OpenHearth?
 
 GitHub’s profile activity truncates heavily (“51 repositories not shown”). Search shows lists; **OpenHearth audits** — with features that don’t exist elsewhere:
 
+- **Browser workspaces** — create a space per user, run audits, track months locally
 - **Ranked hidden repos** — lower-activity repos past the ~25 sidebar cap
 - **Full audit** — PRs + issues + reviews in one command
 - **Doctor + rate-limit UX** — clear fix hints when GitHub throttles you
