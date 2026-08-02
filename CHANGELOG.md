@@ -2,6 +2,20 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.4.0] - 2026-08-02
+
+### Added
+- **Public report cards** — `openhearth share` / `portfolio` + `#/share` / `#/portfolio` routes with Feed vs Search columns
+- **GitHub App scaffold** — `docs/github-app.md` + manifest (PAT still used at runtime)
+- **Team / org radar** — `openhearth radar --users-file` + board username paste
+- **Feed vs Search proof** — `openhearth proof` and workspace proof grid
+- **Year timeline heatmap** — from saved months in workspace UI; CLI `--year`
+- **Monthly digest** — `openhearth digest audit.json` + optional Action webhook (`DIGEST_WEBHOOK_URL`)
+- **Hiring / portfolio mode** — portfolio card URLs and page
+- **Cross-user overlap** — `openhearth overlap` + board shared-repo list
+- **Repo contributor lens** — `openhearth lens USER owner/repo`
+- **Multi-forge stubs** — `openhearth forges` / `--forge` (GitHub live; GitLab/Bitbucket stubbed)
+
 ## [2.3.0] - 2026-08-02
 
 ### Added

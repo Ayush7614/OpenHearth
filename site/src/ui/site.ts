@@ -8,28 +8,28 @@ import {
 
 const FEATURES = [
   {
-    title: "Browser workspaces",
-    body: "Create spaces per user, save months, chart trends, share reports, and import CLI JSON — all local in your browser.",
+    title: "Public report cards",
+    body: "Share or portfolio URLs encode a full month snapshot — Feed vs Search proof included.",
   },
   {
-    title: "Multi-user board",
-    body: "Compare every workspace side by side with latest totals and month-over-month deltas.",
+    title: "Team / org radar",
+    body: "Paste a username list on the board or run openhearth radar --users-file for multi-user audits.",
   },
   {
-    title: "Full Search API inventory",
-    body: "Lists every PR, issue, and review in a date range — not the truncated profile feed.",
+    title: "Feed vs Search proof",
+    body: "Side-by-side what the activity sidebar would show versus what Search actually found.",
   },
   {
-    title: "Auto date-splitting",
-    body: "When a month exceeds GitHub’s 1000-result search cap, splits the range automatically.",
+    title: "Year timeline",
+    body: "Saved months render as a year heatmap so hidden work shows up across the calendar.",
   },
   {
-    title: "Doctor + clear rate limits",
-    body: "openhearth doctor checks auth and Search API quota. Rate-limit errors tell you exactly how to fix them.",
+    title: "Repo contributor lens",
+    body: "openhearth lens USER owner/repo — authored vs reviews and a core/drive-by role hint.",
   },
   {
-    title: "CLI + GitHub Action",
-    body: "Same engine in the terminal and in CI — monthly artifacts when you want automation.",
+    title: "Monthly digest + forges",
+    body: "digest turns audit JSON into Slack/Discord markdown. Multi-forge adapters stub GitLab/Bitbucket.",
   },
 ];
 
@@ -220,13 +220,15 @@ npx @felix-ayush/openhearth audit USERNAME --month 2026-07</code></pre>
         <div class="ref-table">
           <div class="ref-row"><code>openhearth audit &lt;user&gt;</code><span>Full PR + issue + review audit</span></div>
           <div class="ref-row"><code>openhearth hidden &lt;user&gt;</code><span>Ranked likely-hidden repos</span></div>
+          <div class="ref-row"><code>openhearth proof &lt;user&gt;</code><span>Feed vs Search side-by-side</span></div>
+          <div class="ref-row"><code>openhearth radar --users-file</code><span>Team / org multi-user audit</span></div>
+          <div class="ref-row"><code>openhearth overlap A B</code><span>Shared repositories</span></div>
+          <div class="ref-row"><code>openhearth lens user repo</code><span>Contributor lens for one repo</span></div>
+          <div class="ref-row"><code>openhearth share / portfolio</code><span>Public report-card URLs</span></div>
+          <div class="ref-row"><code>openhearth digest audit.json</code><span>Slack/Discord digest markdown</span></div>
           <div class="ref-row"><code>openhearth doctor</code><span>Auth + rate-limit check</span></div>
-          <div class="ref-row"><code>--month YYYY-MM</code><span>Audit a calendar month</span></div>
-          <div class="ref-row"><code>--from / --to</code><span>Custom date range</span></div>
-          <div class="ref-row"><code>--kind pr|issue|review|all</code><span>Filter by contribution type</span></div>
-          <div class="ref-row"><code>--token TOKEN</code><span>GitHub PAT (or GITHUB_TOKEN env)</span></div>
+          <div class="ref-row"><code>--month / --year</code><span>Calendar month or full year</span></div>
           <div class="ref-row"><code>--json / --csv</code><span>Export results</span></div>
-          <div class="ref-row"><code>-V, --version</code><span>Print CLI version</span></div>
         </div>
       </div>
     </section>

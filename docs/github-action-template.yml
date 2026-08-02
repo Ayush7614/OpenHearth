@@ -68,3 +68,16 @@ jobs:
         with:
           name: openhearth-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}
           path: audit-out/
+
+      - name: Digest summary
+        run: |
+          npx --yes @felix-ayush/openhearth@2 digest "audit-out/audit.json" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Post webhook digest (optional)
+        if: ${{ env.DIGEST_WEBHOOK_URL != '' }}
+        env:
+          DIGEST_WEBHOOK_URL: ${{ secrets.DIGEST_WEBHOOK_URL }}
+        run: |
+          DIGEST="$(npx --yes @felix-ayush/openhearth@2 digest audit-out/audit.json)"
+          payload=$(jq -n --arg text "$DIGEST" '{text:$text, content:$text}')
+          curl -sS -X POST -H 'Content-Type: application/json' -d "$payload" "$DIGEST_WEBHOOK_URL"

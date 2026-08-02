@@ -27,8 +27,10 @@ export {
   formatDate,
   monthRange,
   parseMonth,
+  parseYear,
   rangeDayCount,
   splitRange,
+  yearRange,
   type AuditKind,
   type DateRange,
 } from "./queries.js";
@@ -47,6 +49,26 @@ export {
   fullAuditToCsv,
   fullAuditToJson,
 } from "./export.js";
+
+export { buildFeedSearchProof, type FeedSearchProof } from "./proof.js";
+export { computeRepoOverlap, type OverlapResult } from "./overlap.js";
+export { formatDigestMarkdown, formatDigestPlain } from "./digest.js";
+export { defaultLensRange, runRepoLens, type RepoLensResult } from "./lens.js";
+export {
+  unsupportedForgeError,
+  type ForgeClient,
+  type ForgeId,
+} from "./forge.js";
+export { githubForge } from "./github-forge.js";
+export { bitbucketForge, gitlabForge } from "./gitlab-forge.js";
+export {
+  buildPortfolioCard,
+  buildReportCard,
+  decodeCardPayload,
+  encodeCardPayload,
+  type PortfolioCard,
+  type ReportCard,
+} from "./report-card.js";
 
 export const APP_NAME = "OpenHearth";
 export const APP_TAGLINE =

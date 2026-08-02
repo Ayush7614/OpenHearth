@@ -60,3 +60,38 @@ export function renderTrendChart(runs: SavedRun[]): string {
       </svg>
     </div>`;
 }
+
+/** Year month-grid from saved runs (intensity = total contributions). */
+export function renderYearHeatmap(runs: SavedRun[], year?: number): string {
+  if (runs.length === 0) {
+    return `<div class="empty chart-empty"><strong>No year view yet</strong>Save months to build a timeline.</div>`;
+  }
+
+  const byMonth = new Map(runs.map((r) => [r.month, r]));
+  const years = [...new Set(runs.map((r) => Number(r.month.slice(0, 4))))].sort();
+  const y = year ?? years[years.length - 1];
+  const max = Math.max(
+    1,
+    ...[...byMonth.entries()]
+      .filter(([m]) => m.startsWith(String(y)))
+      .map(([, r]) => r.insights.totalContributions)
+  );
+
+  const cells = Array.from({ length: 12 }, (_, i) => {
+    const month = `${y}-${String(i + 1).padStart(2, "0")}`;
+    const run = byMonth.get(month);
+    const v = run?.insights.totalContributions ?? 0;
+    const hidden = run?.insights.reposHiddenByFeed ?? 0;
+    const intensity = v === 0 ? 0 : Math.max(0.18, v / max);
+    return `<div class="heat-cell" style="--heat:${intensity}" title="${month}: ${v} contribs · ~${hidden} hidden">
+      <span class="heat-label">${month.slice(5)}</span>
+      <strong>${v || "·"}</strong>
+    </div>`;
+  }).join("");
+
+  return `
+    <div class="year-heat">
+      <div class="chart-legend"><span>Year timeline · ${y} (saved months)</span></div>
+      <div class="heat-grid">${cells}</div>
+    </div>`;
+}

@@ -150,3 +150,89 @@ export function printDoctor(report: {
     console.log("");
   }
 }
+
+export function printProof(proof: {
+  headline: string;
+  feedCap: number;
+  feedWouldShow: Array<{ repo: string; count: number }>;
+  searchFound: {
+    totalRepos: number;
+    totalContributions: number;
+    likelyHidden: Array<{ repo: string; count: number }>;
+  };
+}): void {
+  console.log(bold("  Feed vs Search proof"));
+  console.log(dim(`  ${proof.headline}`));
+  console.log("");
+  console.log(bold("  Activity feed would likely show") + dim(` · top of ~${proof.feedCap}`));
+  for (const { repo, count } of proof.feedWouldShow.slice(0, 10)) {
+    console.log(`  ${dim("·")} ${repo} ${dim(String(count))}`);
+  }
+  if (proof.feedWouldShow.length === 0) console.log(dim("  (none)"));
+  console.log("");
+  console.log(
+    bold("  Search API found") +
+      dim(` · ${proof.searchFound.totalRepos} repos · ${proof.searchFound.totalContributions} contribs`)
+  );
+  if (proof.searchFound.likelyHidden.length === 0) {
+    console.log(dim("  No likely-hidden repos past the sidebar cap."));
+  } else {
+    console.log(amber("  Likely truncated (least activity first):"));
+    for (const { repo, count } of proof.searchFound.likelyHidden.slice(0, 15)) {
+      console.log(`  ${dim("·")} ${repo} ${dim(String(count))}`);
+    }
+  }
+  console.log("");
+}
+
+export function printOverlap(result: {
+  userA: string;
+  userB: string;
+  sharedRepos: Array<{ repo: string; count: number }>;
+  onlyA: string[];
+  onlyB: string[];
+}): void {
+  console.log(bold("  Cross-user overlap") + dim(` · @${result.userA} ∩ @${result.userB}`));
+  console.log("");
+  if (result.sharedRepos.length === 0) {
+    console.log(dim("  No shared repos in insight snapshots."));
+  } else {
+    console.log(bold("  Shared repositories"));
+    for (const { repo, count } of result.sharedRepos.slice(0, 20)) {
+      console.log(`  ${dim("·")} ${repo} ${dim(String(count))}`);
+    }
+  }
+  console.log("");
+  console.log(dim(`  Only @${result.userA}: ${result.onlyA.length} · Only @${result.userB}: ${result.onlyB.length}`));
+  console.log("");
+}
+
+export function printLens(result: {
+  username: string;
+  repo: string;
+  range: { from: string; to: string };
+  asAuthor: { total: number };
+  asReviewer: { total: number };
+  totalTouches: number;
+  roleHint: string;
+}): void {
+  console.log(bold("  Repo contributor lens") + dim(` · ${result.repo}`));
+  console.log(`  User                 @${result.username}`);
+  console.log(`  Range                ${result.range.from} → ${result.range.to}`);
+  console.log(`  Authored             ${bold(String(result.asAuthor.total))}`);
+  console.log(`  Reviews              ${bold(String(result.asReviewer.total))}`);
+  console.log(`  Total touches        ${bold(String(result.totalTouches))}`);
+  console.log(`  Role hint            ${amber(result.roleHint)}`);
+  console.log("");
+}
+
+export function printRadarRow(username: string, insights: {
+  totalContributions: number;
+  uniqueRepos: number;
+  reposHiddenByFeed: number;
+  mergeRate: number;
+}): void {
+  console.log(
+    `  @${username.padEnd(16)} total ${String(insights.totalContributions).padStart(4)} · repos ${String(insights.uniqueRepos).padStart(3)} · hidden ~${String(insights.reposHiddenByFeed).padStart(3)} · merge ${insights.mergeRate}%`
+  );
+}

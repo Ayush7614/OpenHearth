@@ -32,6 +32,22 @@ export function parseMonth(value: string): DateRange {
   return monthRange(year, month);
 }
 
+/** Full calendar year range (UTC dates as YYYY-MM-DD strings). */
+export function yearRange(year: number): DateRange {
+  if (!Number.isInteger(year) || year < 2008 || year > 2100) {
+    throw new Error(`Invalid year "${year}".`);
+  }
+  return { from: `${year}-01-01`, to: `${year}-12-31` };
+}
+
+export function parseYear(value: string): DateRange {
+  const match = /^(\d{4})$/.exec(value.trim());
+  if (!match) {
+    throw new Error(`Invalid year "${value}". Use YYYY (e.g. 2026).`);
+  }
+  return yearRange(Number(match[1]));
+}
+
 export function buildSearchQuery(
   username: string,
   kind: AuditKind,

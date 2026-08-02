@@ -10,7 +10,7 @@ import {
   type AuditResult,
   type FullAuditResult,
 } from "@felix-ayush/openhearth-core";
-import { renderTrendChart } from "../lib/charts";
+import { renderTrendChart, renderYearHeatmap } from "../lib/charts";
 import { downloadText, escapeAttr, escapeHtml } from "../lib/dom";
 import { showToast } from "../lib/toast";
 import {
@@ -262,6 +262,7 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
         <h2>Trends</h2>
         <p class="muted">Contributions and likely-hidden repos across saved months.</p>
         <div id="chart-panel">${renderTrendChart(listRunsChronological(workspace.id))}</div>
+        <div id="year-panel">${renderYearHeatmap(listRuns(workspace.id))}</div>
         <div id="compare-panel" class="compare-wrap">${compareBlock(workspace.id)}</div>
         <h2>Tracked months</h2>
         <div id="track-panel">${trackTable(listRuns(workspace.id))}</div>
@@ -278,6 +279,7 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
   const resultsEl = root.querySelector<HTMLElement>("#results")!;
   const trackPanel = root.querySelector<HTMLElement>("#track-panel")!;
   const chartPanel = root.querySelector<HTMLElement>("#chart-panel")!;
+  const yearPanel = root.querySelector<HTMLElement>("#year-panel")!;
   const comparePanel = root.querySelector<HTMLElement>("#compare-panel")!;
 
   tokenInput.value = getStoredToken();
@@ -308,6 +310,7 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
   function refreshTrack(): void {
     trackPanel.innerHTML = trackTable(listRuns(workspace.id));
     chartPanel.innerHTML = renderTrendChart(listRunsChronological(workspace.id));
+    yearPanel.innerHTML = renderYearHeatmap(listRuns(workspace.id));
     comparePanel.innerHTML = compareBlock(workspace.id);
     trackPanel.querySelectorAll<HTMLButtonElement>("[data-del-run]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -461,6 +464,31 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
             </div>`
           : ""
       }
+
+      <div class="proof-grid">
+        <section class="proof-col">
+          <h3>Feed would show</h3>
+          <ul class="hidden-list">
+            ${insights.topRepos
+              .slice(0, 8)
+              .map((r) => `<li><span>${escapeHtml(r.repo)}</span><span>${r.count}</span></li>`)
+              .join("") || `<li class="muted">None</li>`}
+          </ul>
+        </section>
+        <section class="proof-col">
+          <h3>Search found · likely hidden</h3>
+          <ul class="hidden-list">
+            ${
+              insights.likelyHiddenRepos.length
+                ? insights.likelyHiddenRepos
+                    .slice(0, 8)
+                    .map((r) => `<li><span>${escapeHtml(r.repo)}</span><span>${r.count}</span></li>`)
+                    .join("")
+                : `<li class="muted">None past the sidebar cap</li>`
+            }
+          </ul>
+        </section>
+      </div>
 
       <div class="tabs" role="tablist">
         ${tabButton("pr", "Pull Requests", full.pullRequests.total)}

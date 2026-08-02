@@ -1406,3 +1406,55 @@ a:hover {
 .toast-ok { border-color: color-mix(in srgb, var(--merged) 40%, var(--line)); }
 .toast-err { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); color: var(--danger); }
 .toast-info { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0 1.5rem;
+}
+@media (max-width: 720px) {
+  .proof-grid { grid-template-columns: 1fr; }
+}
+.proof-col h3,
+.overlap-block h3 {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+.year-heat { margin: 1rem 0 1.5rem; }
+.heat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+@media (min-width: 800px) {
+  .heat-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+.heat-cell {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.4rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--accent) calc(var(--heat, 0) * 55%), transparent);
+}
+.heat-cell .heat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.heat-cell strong { font-size: 0.95rem; }
+.report-card-hero .lead {
+  margin-top: 0.75rem;
+  font-size: 1.05rem;
+}
+.overlap-block { margin-top: 1.25rem; }
+#radar-users {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  padding: 0.75rem;
+  font: inherit;
+}

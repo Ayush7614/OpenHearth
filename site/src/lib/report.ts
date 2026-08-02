@@ -1,4 +1,9 @@
 import type { AuditInsights } from "@felix-ayush/openhearth-core";
+import {
+  decodeCardPayload,
+  type PortfolioCard,
+  type ReportCard,
+} from "@felix-ayush/openhearth-core";
 
 export type SharePayload = {
   v: 1;
@@ -7,6 +12,17 @@ export type SharePayload = {
   insights: AuditInsights;
   generatedAt: string;
 };
+
+export type DecodedReport =
+  | { mode: "share"; username: string; label: string; insights: AuditInsights; generatedAt: string }
+  | {
+      mode: "portfolio";
+      username: string;
+      label: string;
+      insights: AuditInsights;
+      generatedAt: string;
+      headline?: string;
+    };
 
 function toBase64Url(json: string): string {
   const bytes = new TextEncoder().encode(json);
@@ -29,12 +45,46 @@ export function encodeSharePayload(payload: SharePayload): string {
 
 export function decodeSharePayload(encoded: string): SharePayload | null {
   try {
-    const data = JSON.parse(fromBase64Url(encoded)) as SharePayload;
+    const data = JSON.parse(fromBase64Url(encoded)) as SharePayload & { kind?: string; label?: string };
     if (data?.v !== 1 || !data.insights || !data.username) return null;
-    return data;
+    if (data.kind === "portfolio") return null;
+    if (!data.month && data.label) {
+      return {
+        v: 1,
+        username: data.username,
+        month: data.label,
+        insights: data.insights,
+        generatedAt: data.generatedAt,
+      };
+    }
+    if (!data.month) return null;
+    return data as SharePayload;
   } catch {
     return null;
   }
+}
+
+export function decodeAnyReport(encoded: string): DecodedReport | null {
+  const card = decodeCardPayload(encoded) as ReportCard | PortfolioCard | null;
+  if (card) {
+    return {
+      mode: card.kind === "portfolio" ? "portfolio" : "share",
+      username: card.username,
+      label: card.label,
+      insights: card.insights,
+      generatedAt: card.generatedAt,
+      headline: card.kind === "portfolio" ? card.headline : undefined,
+    };
+  }
+  const legacy = decodeSharePayload(encoded);
+  if (!legacy) return null;
+  return {
+    mode: "share",
+    username: legacy.username,
+    label: legacy.month,
+    insights: legacy.insights,
+    generatedAt: legacy.generatedAt,
+  };
 }
 
 export function shareHashFor(payload: SharePayload): string {
@@ -56,6 +106,10 @@ export function buildStandaloneReportHtml(payload: SharePayload): string {
     .slice(0, 15)
     .map((r) => `<li><code>${escape(r.repo)}</code> — ${r.count}</li>`)
     .join("");
+  const feed = i.topRepos
+    .slice(0, 8)
+    .map((r) => `<li><code>${escape(r.repo)}</code> — ${r.count}</li>`)
+    .join("");
 
   return `<!doctype html>
 <html lang="en">
@@ -73,6 +127,8 @@ export function buildStandaloneReportHtml(payload: SharePayload): string {
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.75rem; margin:1.25rem 0; }
     .stat { border:1px solid var(--line); border-radius:12px; padding:1rem; }
     .stat strong { display:block; font-size:1.5rem; color:var(--accent); }
+    .cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media (max-width:640px){ .cols{grid-template-columns:1fr;} }
     ul { padding-left:1.1rem; }
     code { font-family:ui-monospace,monospace; font-size:.9em; }
     footer { margin-top:3rem; color:var(--muted); font-size:.85rem; }
@@ -81,7 +137,7 @@ export function buildStandaloneReportHtml(payload: SharePayload): string {
 </head>
 <body>
   <main>
-    <p class="muted">OpenHearth · contribution audit report</p>
+    <p class="muted">OpenHearth · public report card</p>
     <h1>@${escape(payload.username)}</h1>
     <p class="muted">${escape(payload.month)} · generated ${escape(payload.generatedAt.slice(0, 19))}Z</p>
     <div class="grid">
@@ -91,11 +147,18 @@ export function buildStandaloneReportHtml(payload: SharePayload): string {
       <div class="stat"><span class="muted">Merge</span><strong>${i.mergeRate}%</strong></div>
     </div>
     <p>${escape(i.feedTruncationNote)}</p>
-    <p class="muted">PRs ${i.byKind.pr} · Issues ${i.byKind.issue} · Reviews ${i.byKind.review}${i.busiestDay ? ` · Busiest ${escape(i.busiestDay)}` : ""}</p>
+    <div class="cols">
+      <div>
+        <h2>Feed would show</h2>
+        <ul>${feed || "<li class='muted'>None</li>"}</ul>
+      </div>
+      <div>
+        <h2>Likely hidden</h2>
+        <ul>${hidden || "<li class='muted'>None past the sidebar cap</li>"}</ul>
+      </div>
+    </div>
     <h2>Top repositories</h2>
     <ul>${top || "<li class='muted'>None</li>"}</ul>
-    <h2>Likely hidden</h2>
-    <ul>${hidden || "<li class='muted'>None past the sidebar cap</li>"}</ul>
     <footer>Built with <a href="https://ayush7614.github.io/OpenHearth/">OpenHearth</a> · <code>npx @felix-ayush/openhearth</code></footer>
   </main>
 </body>

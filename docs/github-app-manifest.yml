@@ -1,0 +1,16 @@
+# OpenHearth GitHub App manifest (scaffold)
+
+name: OpenHearth
+url: https://ayush7614.github.io/OpenHearth/
+hook_attributes:
+  url: https://example.com/openhearth/webhook
+  active: false
+redirect_url: https://ayush7614.github.io/OpenHearth/#/app
+callback_urls:
+  - https://ayush7614.github.io/OpenHearth/#/app
+public: true
+default_permissions:
+  metadata: read
+  issues: read
+  pull_requests: read
+default_events: []
