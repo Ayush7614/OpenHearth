@@ -15,9 +15,9 @@
 
 ## Product
 
-| Landing & docs | Browser workspaces | CLI |
-| --- | --- | --- |
-| <img src="docs/images/landing.jpg" alt="OpenHearth landing" width="280" /> | <img src="docs/images/workspace.jpg" alt="OpenHearth workspace UI" width="280" /> | <img src="docs/images/cli.jpg" alt="OpenHearth CLI terminal output" width="280" /> |
+| Landing & docs | Workspace detail | Multi-user board | CLI |
+| --- | --- | --- | --- |
+| <img src="docs/images/landing.jpg" alt="OpenHearth landing" width="220" /> | <img src="docs/images/workspace.jpg" alt="OpenHearth workspace with charts" width="220" /> | <img src="docs/images/board.jpg" alt="OpenHearth multi-user board compare" width="220" /> | <img src="docs/images/cli.jpg" alt="OpenHearth CLI terminal output" width="220" /> |
 
 - **Workspaces** — create a space per GitHub user, run audits, save months, chart trends, share reports, import CLI JSON  
 - **Board** — compare multiple users side by side with month-over-month deltas  
