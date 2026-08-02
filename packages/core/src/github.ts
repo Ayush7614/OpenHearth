@@ -97,7 +97,21 @@ function formatRateLimitHint(): string {
   return lines.map((l) => `  ${l}`).join("\n");
 }
 
-async function githubFetch(url: string): Promise<Response> {
+async function sleep(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function retryWaitMs(attempt: number): number {
+  const reset = lastRateLimit.reset;
+  if (reset > 0) {
+    const untilReset = reset * 1000 - Date.now() + 500;
+    // Cap wait so the UI/CLI don't hang forever (max ~20s per attempt).
+    return Math.min(Math.max(untilReset, 800 * attempt), 20_000);
+  }
+  return Math.min(1000 * 2 ** attempt, 8_000);
+}
+
+async function githubFetch(url: string, attempt = 0): Promise<Response> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
@@ -110,11 +124,18 @@ async function githubFetch(url: string): Promise<Response> {
   const res = await fetch(url, { headers });
   updateRateLimit(res);
 
+  if ((res.status === 403 || res.status === 429) && attempt < 2) {
+    const wait = retryWaitMs(attempt + 1);
+    await sleep(wait);
+    return githubFetch(url, attempt + 1);
+  }
+
   if (res.status === 403 || res.status === 429) {
     const body = await res.json().catch(() => ({}));
     const apiMsg =
       (body as { message?: string }).message ?? "GitHub rate limit exceeded.";
-    throw new GitHubApiError(`${apiMsg}\n\n${formatRateLimitHint()}`, res.status);
+    const waited = attempt > 0 ? `\n  Retried ${attempt} time(s) after short backoff.` : "";
+    throw new GitHubApiError(`${apiMsg}${waited}\n\n${formatRateLimitHint()}`, res.status);
   }
 
   if (!res.ok) {

@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v2.3.0). Leave empty to use the pushed tag."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build CLI
+        run: npm run build:cli
+
+      - name: Resolve tag
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract changelog section
+        id: notes
+        run: |
+          VERSION="${{ steps.meta.outputs.version }}"
+          python3 - <<'PY'
+          import pathlib, os, re
+          version = os.environ["VERSION"]
+          text = pathlib.Path("CHANGELOG.md").read_text()
+          pattern = rf"## \[?{re.escape(version)}\]?.*?\n(.*?)(?=\n## |\Z)"
+          m = re.search(pattern, text, re.S)
+          body = m.group(1).strip() if m else f"Release {version} of OpenHearth CLI and workspace UI."
+          pathlib.Path("release-notes.md").write_text(body + "\n")
+          PY
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: OpenHearth ${{ steps.meta.outputs.tag }}
+          body_path: release-notes.md
+          files: |
+            packages/cli/README.md
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish npm (if NPM_TOKEN secret is set)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN not configured — skipping npm publish (GitHub Release still created)."
+            exit 0
+          fi
+          npm publish -w @felix-ayush/openhearth --access public

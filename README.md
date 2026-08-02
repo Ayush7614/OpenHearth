@@ -70,7 +70,21 @@ Set `GITHUB_TOKEN` for higher rate limits.
 
 ### GitHub Action
 
-`.github/workflows/audit.yml` runs audits on demand or monthly and uploads JSON/CSV artifacts.
+- In this repo: `.github/workflows/audit.yml`
+- **For any other repo:** copy [`docs/github-action-template.yml`](docs/github-action-template.yml)
+
+### Releases
+
+Tagged releases (`v*`) create a **GitHub Release** via `.github/workflows/release.yml` (tests + build + notes from `CHANGELOG.md`).  
+Optional npm publish when the `NPM_TOKEN` secret is set.
+
+```bash
+# After merging to main
+git tag v2.3.0
+git push origin v2.3.0
+```
+
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## Website (docs + workspaces)
 
@@ -79,7 +93,14 @@ npm run dev:site    # local marketing/docs + workspace UI
 npm run build:site  # builds site/dist for GitHub Pages
 ```
 
-Open [ayush7614.github.io/OpenHearth/#/app](https://ayush7614.github.io/OpenHearth/#/app) for workspaces.
+Open [ayush7614.github.io/OpenHearth/#/app](https://ayush7614.github.io/OpenHearth/#/app) for workspaces (demo data loads on first visit).
+
+### CLI → UI
+
+```bash
+npx @felix-ayush/openhearth audit USER --month 2026-07 --json report.json
+# then drop report.json on the Workspaces page (or inside a workspace)
+```
 
 ## Monorepo layout
 
@@ -87,7 +108,7 @@ Open [ayush7614.github.io/OpenHearth/#/app](https://ayush7614.github.io/OpenHear
 packages/core/   Internal audit engine (bundled into the CLI — not published)
 packages/cli/    @felix-ayush/openhearth — the only npm package users should install
 site/            Marketing, docs & browser workspaces (GitHub Pages)
-docs/images/     README product screenshots
+docs/            Images + GitHub Action template for other repos
 ```
 
 > Note: an early `@felix-ayush/openhearth-core` publish was removed from npm.  

@@ -1,5 +1,7 @@
 import { escapeHtml } from "../lib/dom";
 import { hrefFor, navigate } from "../lib/router";
+import { showToast } from "../lib/toast";
+import { loadDemoData } from "../lib/demo";
 import {
   createWorkspace,
   deleteWorkspace,
@@ -77,9 +79,16 @@ export function renderWorkspaceHome(root: HTMLElement): void {
           <h1>Workspaces</h1>
           <p class="muted">One space per GitHub user. Track months locally — same engine as the CLI.</p>
         </div>
+        <div class="app-heading-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="load-demo">Load demo data</button>
+        </div>
       </div>
 
       ${onboardingHtml()}
+      <p class="hint security-note">
+        Security: optional GitHub PATs stay in <code>sessionStorage</code> for this tab only and are sent only to
+        <code>api.github.com</code>. Prefer a fine-grained token with public read. Never paste tokens into shared machines or chat.
+      </p>
 
       <form class="ws-create audit-form" id="create-form" autocomplete="off">
         <div class="form-row ws-create-row">
@@ -127,6 +136,15 @@ export function renderWorkspaceHome(root: HTMLElement): void {
   `;
 
   bindTheme(root);
+
+  root.querySelector("#load-demo")?.addEventListener("click", () => {
+    const result = loadDemoData();
+    showToast(
+      result.seeded ? "Demo workspaces loaded — open Board to compare" : "Demo users already present",
+      result.seeded ? "ok" : "info"
+    );
+    renderWorkspaceHome(root);
+  });
 
   root.querySelector("#dismiss-onboard")?.addEventListener("click", () => {
     markOnboarded();

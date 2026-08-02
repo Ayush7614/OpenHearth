@@ -1,0 +1,70 @@
+# OpenHearth — drop-in GitHub Action for any repository
+#
+# 1. Copy this file to: .github/workflows/openhearth-audit.yml
+# 2. Commit & push
+# 3. Actions → OpenHearth Audit → Run workflow
+#
+# Uses the published CLI from npm (no checkout of OpenHearth required).
+
+name: OpenHearth Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: GitHub username to audit
+        required: true
+        type: string
+      month:
+        description: Month (YYYY-MM). Empty = previous calendar month.
+        required: false
+        type: string
+  schedule:
+    - cron: "0 12 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve month
+        id: meta
+        env:
+          INPUT_MONTH: ${{ inputs.month }}
+          INPUT_USER: ${{ inputs.username }}
+        run: |
+          USERNAME="${INPUT_USER:-${{ github.repository_owner }}}"
+          if [ -n "$INPUT_MONTH" ]; then
+            MONTH="$INPUT_MONTH"
+          else
+            MONTH="$(date -u -d "$(date -u +%Y-%m-01) -1 day" +%Y-%m)"
+          fi
+          echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
+          echo "month=$MONTH" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run OpenHearth
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p audit-out
+          npx --yes @felix-ayush/openhearth@2 doctor
+          npx --yes @felix-ayush/openhearth@2 audit "${{ steps.meta.outputs.username }}" \
+            --month "${{ steps.meta.outputs.month }}" \
+            --json "audit-out/audit.json" \
+            --csv "audit-out/audit.csv"
+          npx --yes @felix-ayush/openhearth@2 hidden "${{ steps.meta.outputs.username }}" \
+            --month "${{ steps.meta.outputs.month }}" \
+            --json "audit-out/hidden.json"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openhearth-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}
+          path: audit-out/
