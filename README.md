@@ -21,7 +21,7 @@
 
 - **Workspaces** — create a space per GitHub user, run audits, save months, chart trends, share reports, import CLI JSON  
 - **Board** — team radar, compare users, shared-repo overlap  
-- **CLI 2.4** — `audit`, `hidden`, `proof`, `radar`, `overlap`, `lens`, `share`, `portfolio`, `digest`, `forges`, `doctor`
+- **CLI 2.5** — `auth`, `config`/`run`, `share --gist`, plus 2.4 commands (`proof`, `radar`, `lens`, …)
 
 ## Why OpenHearth?
 

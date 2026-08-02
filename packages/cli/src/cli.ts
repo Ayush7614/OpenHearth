@@ -12,7 +12,10 @@ import {
   checkRateLimit,
   computeRepoOverlap,
   defaultLensRange,
+  authSetupInstructions,
+  createReportGist,
   encodeCardPayload,
+  exampleConfigYaml,
   formatDigestMarkdown,
   formatDigestPlain,
   fullAuditToCsv,
@@ -20,13 +23,17 @@ import {
   getAuthToken,
   githubForge,
   gitlabForge,
+  parseConfigText,
   parseMonth,
   parseYear,
+  pollDeviceToken,
   runAudit,
   runFullAudit,
   runRepoLens,
   setAuthToken,
+  startDeviceFlow,
   unsupportedForgeError,
+  validateAuth,
   type AuditInsights,
   type AuditKind,
   type DateRange,
@@ -61,7 +68,10 @@ type Command =
   | "digest"
   | "share"
   | "portfolio"
-  | "forges";
+  | "forges"
+  | "auth"
+  | "config"
+  | "run";
 
 type CliOptions = {
   command: Command;
@@ -77,7 +87,9 @@ type CliOptions = {
   json?: string;
   csv?: string;
   usersFile?: string;
+  configPath?: string;
   forge: ForgeId;
+  gist: boolean;
   quiet: boolean;
   help: boolean;
   version: boolean;
@@ -114,6 +126,9 @@ Usage:
   openhearth share <username> [options]
   openhearth portfolio <username> [options]
   openhearth forges
+  openhearth auth [login|status|init]
+  openhearth config init
+  openhearth run [--config openhearth.yml]
   openhearth doctor
   openhearth --version
 
@@ -125,8 +140,11 @@ Commands:
   overlap     Shared repos between two users (from live audits)
   lens        Contributor lens for one repository
   digest      Slack/Discord markdown from an audit JSON file
-  share       Print a public report-card URL (Pages hash)
-  portfolio   Print a hiring/portfolio card URL
+  share       Public report-card URL (add --gist for short #/r/:id)
+  portfolio   Hiring/portfolio card URL (--gist supported)
+  config      Print example openhearth.yml (config init writes file)
+  run         Radar from openhearth.yml / openhearth.json
+  auth        Token wizard / OAuth device login / status
   forges      List forge adapters (GitHub live; others stubbed)
   doctor      Check auth + GitHub rate-limit status
 
@@ -138,6 +156,8 @@ Options:
   --kind pr|issue|review|all   Default: all
   --token TOKEN       GitHub PAT (or set GITHUB_TOKEN)
   --users-file PATH   Newline/comma-separated usernames (radar)
+  --config PATH       openhearth.yml / .json for run
+  --gist              Publish share/portfolio card to a public gist (short URL)
   --forge github|gitlab|bitbucket   Default: github
   --json [file]       Export JSON (stdout if no file)
   --csv [file]        Export CSV (stdout if no file)
@@ -166,6 +186,9 @@ const COMMANDS = new Set<Command>([
   "share",
   "portfolio",
   "forges",
+  "auth",
+  "config",
+  "run",
 ]);
 
 function parseArgs(argv: string[]): CliOptions {
@@ -176,6 +199,7 @@ function parseArgs(argv: string[]): CliOptions {
     repo: "",
     kind: "all",
     forge: "github",
+    gist: false,
     quiet: false,
     help: false,
     version: false,
@@ -227,6 +251,14 @@ function parseArgs(argv: string[]): CliOptions {
     }
     if (arg === "--forge" && argv[i + 1]) {
       opts.forge = argv[++i] as ForgeId;
+      continue;
+    }
+    if (arg === "--config" && argv[i + 1]) {
+      opts.configPath = argv[++i];
+      continue;
+    }
+    if (arg === "--gist") {
+      opts.gist = true;
       continue;
     }
     if (arg === "--json") {
@@ -353,6 +385,90 @@ async function main(): Promise<void> {
       return;
     }
 
+    if (opts.command === "auth") {
+      const sub = (opts.username || "status").toLowerCase();
+      if (sub === "init" || sub === "help") {
+        console.log(authSetupInstructions());
+        return;
+      }
+      if (sub === "status" || sub === "") {
+        const result = await validateAuth();
+        printBanner();
+        console.log(`  Auth status · ${result.message}`);
+        console.log("");
+        if (!result.authenticated) console.log(authSetupInstructions());
+        return;
+      }
+      if (sub === "login") {
+        printBanner();
+        const started = await startDeviceFlow();
+        console.log(`  Open ${started.verification_uri}`);
+        console.log(`  Enter code: ${started.user_code}`);
+        console.log("  Waiting for authorization…");
+        const token = await pollDeviceToken(started.device_code, undefined, started.interval || 5);
+        setAuthToken(token);
+        console.log("");
+        console.log("  Login OK. Export for this shell:");
+        console.log(`  export GITHUB_TOKEN=${token}`);
+        console.log("");
+        const result = await validateAuth(token);
+        console.log(`  ${result.message}`);
+        console.log("");
+        return;
+      }
+      console.log(authSetupInstructions());
+      return;
+    }
+
+    if (opts.command === "config") {
+      const sub = (opts.username || "show").toLowerCase();
+      const example = exampleConfigYaml();
+      if (sub === "init") {
+        const target = opts.configPath || "openhearth.yml";
+        writeFileSync(target, example, "utf8");
+        console.error(`  Wrote ${target}`);
+        return;
+      }
+      console.log(example);
+      return;
+    }
+
+    if (opts.command === "run") {
+      const confPath = opts.configPath;
+      let text: string;
+      let labelPath: string;
+      if (confPath) {
+        text = readFileSync(confPath, "utf8");
+        labelPath = confPath;
+      } else {
+        const candidates = ["openhearth.yml", "openhearth.yaml", "openhearth.json"];
+        const hit = candidates.find((n) => {
+          try { readFileSync(n); return true; } catch { return false; }
+        });
+        if (!hit) throw new Error("No openhearth.yml found. Run: openhearth config init");
+        text = readFileSync(hit, "utf8");
+        labelPath = hit;
+      }
+      const cfg = parseConfigText(text, labelPath);
+      if (cfg.month) opts.month = cfg.month;
+      if (cfg.year) opts.year = cfg.year;
+      if (cfg.from) opts.from = cfg.from;
+      if (cfg.to) opts.to = cfg.to;
+      if (cfg.forge) opts.forge = cfg.forge as ForgeId;
+      assertForge(opts.forge);
+      const range = resolveRange(opts);
+      const label = rangeLabel(range, opts);
+      if (!opts.quiet) {
+        printBanner();
+        console.log(`  Config run · ${labelPath} · ${cfg.users.length} users · ${label}\n`);
+      }
+      for (const user of cfg.users) {
+        const full = await auditUser(user, range, opts.quiet ? undefined : printProgress);
+        if (!opts.quiet) printRadarRow(user, full.insights);
+      }
+      return;
+    }
+
     if (opts.command === "digest") {
       const path = opts.usersFile;
       if (!path) {
@@ -444,7 +560,10 @@ async function main(): Promise<void> {
       return;
     }
 
-    if (!opts.username && opts.command !== "doctor") {
+    if (
+      !opts.username &&
+      !["doctor", "forges", "auth", "config", "run", "radar", "digest"].includes(opts.command)
+    ) {
       console.log(usage());
       process.exit(1);
     }
@@ -475,6 +594,14 @@ async function main(): Promise<void> {
         opts.command === "portfolio"
           ? buildPortfolioCard(opts.username, label, full.insights)
           : buildReportCard(opts.username, label, full.insights);
+      if (opts.gist) {
+        const gist = await createReportGist(card);
+        const shortUrl = `${SITE_BASE}#/r/${gist.id}`;
+        console.log(shortUrl);
+        console.error(`  Gist: ${gist.htmlUrl}`);
+        if (opts.json) writeOutput(JSON.stringify({ url: shortUrl, gist, card }, null, 2), opts.json);
+        return;
+      }
       const encoded = encodeCardPayload(card);
       const url = cardUrl(opts.command === "portfolio" ? "portfolio" : "share", encoded);
       console.log(url);

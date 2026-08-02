@@ -1,6 +1,6 @@
 import { parseHash, onRouteChange, type Route } from "../lib/router";
 import { renderBoard } from "./board";
-import { renderPortfolioView, renderShareView } from "./share";
+import { renderGistView, renderPortfolioView, renderShareView } from "./share";
 import { renderSite } from "./site";
 import { renderWorkspaceHome } from "./workspace-home";
 import { renderWorkspaceView } from "./workspace-view";
@@ -25,6 +25,9 @@ export function startApp(root: HTMLElement): void {
         break;
       case "portfolio":
         renderPortfolioView(root, route.payload);
+        break;
+      case "gist":
+        renderGistView(root, route.id);
         break;
     }
   };

@@ -1,36 +1,37 @@
-# GitHub App scaffold (v1)
+# GitHub App & auth (2.5)
 
-OpenHearth still authenticates with a **PAT** or Actions `GITHUB_TOKEN` today. This document is the scaffold for a future GitHub App so orgs can install OpenHearth without pasting tokens into the browser.
+OpenHearth supports three auth paths:
 
-## Why an App?
+## A. Fine-grained PAT (default)
 
-- No `sessionStorage` PAT for browser audits
-- Org-level install + least privilege
-- Higher, clearer rate limits for Search
+```bash
+export GITHUB_TOKEN=github_pat_…
+openhearth doctor
+openhearth auth status
+```
 
-## Suggested permissions
+Browser: Workspaces → **Auth wizard** (sessionStorage only).
 
-| Permission | Access | Why |
-| --- | --- | --- |
-| Metadata | Read | Basic repo/user metadata |
-| Issues | Read | Search-backed issue/PR inventory |
-| Pull requests | Read | PR + review inventory |
+Add **gist** permission if you use `openhearth share USER --gist`.
 
-No Contents write. No administration.
+## B. OAuth device flow
 
-## Manifest
+1. Create a GitHub **OAuth App** (callback can be `http://localhost`)
+2. `export OPENHEARTH_CLIENT_ID=…`
+3. `openhearth auth login` — enter the user code in the browser
+4. Export the printed `GITHUB_TOKEN` for the shell
 
-See [`github-app-manifest.yml`](./github-app-manifest.yml). Create an App from it:
+## C. GitHub App install token
 
-1. GitHub → Settings → Developer settings → GitHub Apps → **New GitHub App**
-2. Or use the manifest flow: https://docs.github.com/en/apps/sharing-github-apps/registering-a-github-app-from-a-manifest
-3. Install on the accounts you want to audit
-4. Generate a private key; store as `OPENHEARTH_APP_ID` + `OPENHEARTH_APP_PRIVATE_KEY` (future CLI)
+Use [`github-app-manifest.yml`](./github-app-manifest.yml) to register an App, install it, then mint an installation access token and:
 
-## Status in 2.4.0
+```bash
+export GITHUB_TOKEN=<installation_token>
+```
 
-- Manifest + this doc ship now
-- CLI/browser still use `GITHUB_TOKEN` / `--token`
-- OAuth device flow / App installation tokens are **not** wired yet
+Full App OAuth proxy for the static Pages site is still out of scope — device flow + PAT cover CLI and browser without a backend.
 
-Track progress in Discussions or Issues when you enable them.
+## Related
+
+- Short share links: `openhearth share USER --month YYYY-MM --gist` → `#/r/:gistId`
+- Config: `openhearth config init` → `openhearth run`

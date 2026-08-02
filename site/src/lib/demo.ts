@@ -24,6 +24,12 @@ function insights(partial: Partial<AuditInsights> & Pick<AuditInsights, "totalCo
       { repo: "old/archive-pr", count: 2 },
     ],
     busiestDay: partial.busiestDay ?? "2026-06-18",
+    byDay: partial.byDay ?? [
+      { day: "2026-06-02", count: 4 },
+      { day: "2026-06-10", count: 9 },
+      { day: "2026-06-18", count: 14 },
+      { day: "2026-06-22", count: 7 },
+    ],
     byKind: partial.byKind ?? { pr: 80, issue: 12, review: 4 },
     reposVisibleOnFeed: Math.min(partial.uniqueRepos, 25),
     totalContributions: partial.totalContributions,

@@ -18,6 +18,8 @@ export type AuditInsights = {
    */
   likelyHiddenRepos: RepoCount[];
   busiestDay: string | null;
+  /** Per-day contribution counts in the audited range (for day heatmaps). */
+  byDay?: Array<{ day: string; count: number }>;
   mergeRate: number;
   byKind: { pr: number; issue: number; review: number };
 };
@@ -51,6 +53,12 @@ function busiestDay(items: ContributionItem[]): string | null {
     }
   }
   return best;
+}
+
+function daysSeries(items: ContributionItem[]): Array<{ day: string; count: number }> {
+  return [...countByDay(items).entries()]
+    .map(([day, count]) => ({ day, count }))
+    .sort((a, b) => a.day.localeCompare(b.day));
 }
 
 export function buildInsights(
@@ -106,6 +114,7 @@ export function buildInsights(
     topRepos,
     likelyHiddenRepos,
     busiestDay: busiestDay(allItems),
+    byDay: daysSeries(allItems),
     mergeRate,
     byKind: { pr: pr.total, issue: issue.total, review: review.total },
   };

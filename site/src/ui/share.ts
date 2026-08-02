@@ -157,3 +157,42 @@ export function renderPortfolioView(root: HTMLElement, encoded: string): void {
   }
   bindTheme(root);
 }
+
+export function renderGistView(root: HTMLElement, gistId: string): void {
+  root.innerHTML = `
+    <header class="app-top">
+      <div class="shell app-top-inner">
+        <a class="brand-mini" href="${hrefFor({ name: "docs" })}">Open<span>Hearth</span></a>
+        <nav class="app-nav">
+          <a href="${hrefFor({ name: "workspaces" })}" class="nav-link">Workspaces</a>
+          <a href="${hrefFor({ name: "docs" })}" class="nav-link">Docs</a>
+          ${themeToggleMarkup()}
+        </nav>
+      </div>
+    </header>
+    <main class="shell app-main" id="gist-main">
+      <div class="empty"><strong>Loading report…</strong>Fetching gist <code>${escapeHtml(gistId)}</code></div>
+    </main>
+  `;
+  bindTheme(root);
+
+  const main = root.querySelector("#gist-main")!;
+  void (async () => {
+    try {
+      const { fetchReportGist } = await import("@felix-ayush/openhearth-core");
+      const card = await fetchReportGist(gistId);
+      const mode = card.kind === "portfolio" ? "portfolio" : "share";
+      main.innerHTML = reportBody(
+        mode,
+        card.username,
+        card.label,
+        card.insights,
+        card.kind === "portfolio" ? card.headline : undefined
+      );
+    } catch (err) {
+      main.innerHTML = `<div class="empty"><strong>Could not load gist</strong>${escapeHtml(
+        err instanceof Error ? err.message : String(err)
+      )} <a href="${hrefFor({ name: "workspaces" })}">Open workspaces</a></div>`;
+    }
+  })();
+}
