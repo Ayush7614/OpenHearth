@@ -1,0 +1,92 @@
+name: OpenHearth Contribution Audit
+description: >-
+  Audit every GitHub PR, issue, and review for a user — including repositories
+  hidden from the activity feed (“N repositories not shown”).
+author: Ayush Kumar
+
+branding:
+  icon: activity
+  color: orange
+
+inputs:
+  username:
+    description: GitHub username to audit
+    required: true
+  month:
+    description: Calendar month (YYYY-MM). Leave empty for the previous UTC month.
+    required: false
+    default: ""
+  github-token:
+    description: Token for the GitHub Search API (needs public read; gist optional)
+    required: false
+    default: ""
+  version:
+    description: npm dist-tag or version of @felix-ayush/openhearth to run
+    required: false
+    default: "2"
+  working-directory:
+    description: Directory for JSON/CSV outputs
+    required: false
+    default: openhearth-out
+
+outputs:
+  month:
+    description: Resolved audit month (YYYY-MM)
+    value: ${{ steps.meta.outputs.month }}
+  username:
+    description: Resolved username
+    value: ${{ steps.meta.outputs.username }}
+  json-path:
+    description: Path to the audit JSON artifact
+    value: ${{ steps.meta.outputs.json_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+
+    - name: Resolve month + paths
+      id: meta
+      shell: bash
+      env:
+        INPUT_MONTH: ${{ inputs.month }}
+        INPUT_USER: ${{ inputs.username }}
+        OUT_DIR: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        USERNAME="${INPUT_USER}"
+        if [ -n "${INPUT_MONTH}" ]; then
+          MONTH="${INPUT_MONTH}"
+        else
+          MONTH="$(date -u -d "$(date -u +%Y-%m-01) -1 day" +%Y-%m)"
+        fi
+        mkdir -p "${OUT_DIR}"
+        JSON_PATH="${OUT_DIR}/audit-${USERNAME}-${MONTH}.json"
+        echo "username=${USERNAME}" >> "$GITHUB_OUTPUT"
+        echo "month=${MONTH}" >> "$GITHUB_OUTPUT"
+        echo "json_path=${JSON_PATH}" >> "$GITHUB_OUTPUT"
+        echo "Auditing @${USERNAME} for ${MONTH}"
+
+    - name: Run OpenHearth
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
+        OH_VERSION: ${{ inputs.version }}
+        USERNAME: ${{ steps.meta.outputs.username }}
+        MONTH: ${{ steps.meta.outputs.month }}
+        JSON_PATH: ${{ steps.meta.outputs.json_path }}
+        OUT_DIR: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        npx --yes "@felix-ayush/openhearth@${OH_VERSION}" doctor
+        npx --yes "@felix-ayush/openhearth@${OH_VERSION}" audit "${USERNAME}" \
+          --month "${MONTH}" \
+          --json "${JSON_PATH}" \
+          --csv "${OUT_DIR}/audit-${USERNAME}-${MONTH}.csv"
+        npx --yes "@felix-ayush/openhearth@${OH_VERSION}" hidden "${USERNAME}" \
+          --month "${MONTH}" \
+          --json "${OUT_DIR}/hidden-${USERNAME}-${MONTH}.json"
+        npx --yes "@felix-ayush/openhearth@${OH_VERSION}" digest "${JSON_PATH}" >> "$GITHUB_STEP_SUMMARY" || true

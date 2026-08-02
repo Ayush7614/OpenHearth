@@ -1,10 +1,11 @@
-# OpenHearth — drop-in GitHub Action for any repository
+# OpenHearth — drop-in workflow for any repository (npx CLI)
 #
-# 1. Copy this file to: .github/workflows/openhearth-audit.yml
-# 2. Commit & push
-# 3. Actions → OpenHearth Audit → Run workflow
+# 1. Copy to: .github/workflows/openhearth-audit.yml
+# 2. Or use the Marketplace composite action instead:
+#      uses: Ayush7614/OpenHearth@v2.5.0
+#    See docs/github-marketplace.md
 #
-# Uses the published CLI from npm (no checkout of OpenHearth required).
+# Uses the published CLI from npm.
 
 name: OpenHearth Audit
 
