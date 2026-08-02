@@ -1,0 +1,28 @@
+# Example: use the OpenHearth Marketplace / composite Action
+name: OpenHearth Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 12 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run OpenHearth
+        uses: Ayush7614/OpenHearth@v2.5.0
+        with:
+          username: ${{ github.repository_owner }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # month: "2026-07"
+          # version: "2"   # npm dist-tag / version
+
+      - name: Upload outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: openhearth-out
+          path: openhearth-out/
