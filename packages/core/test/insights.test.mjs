@@ -10,6 +10,7 @@ import {
   decodeCardPayload,
   encodeCardPayload,
   formatDigestPlain,
+  parseConfigText,
   parseYear,
   yearRange,
 } from "../dist/index.js";
@@ -126,5 +127,14 @@ describe("v2.4 helpers", () => {
     assert.match(plain, /OpenHearth digest/);
     assert.deepEqual(yearRange(2026), { from: "2026-01-01", to: "2026-12-31" });
     assert.deepEqual(parseYear("2025"), { from: "2025-01-01", to: "2025-12-31" });
+  });
+
+  it("parses openhearth.yml and includes byDay", () => {
+    const cfg = parseConfigText(`users:\n  - octocat\n  - torvalds\nmonth: 2026-07\n`);
+    assert.deepEqual(cfg.users, ["octocat", "torvalds"]);
+    assert.equal(cfg.month, "2026-07");
+    const insights = manyRepoInsights();
+    assert.ok(Array.isArray(insights.byDay));
+    assert.ok(insights.byDay.length > 0);
   });
 });

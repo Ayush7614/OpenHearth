@@ -2,6 +2,15 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.5.0] - 2026-08-02
+
+### Added
+- **Auth wizard** — `openhearth auth` (status / device login) + browser PAT check
+- **Short gist share URLs** — `share|portfolio --gist` → `#/r/:id`
+- **Day-level heatmap** — `insights.byDay` in audits + workspace UI
+- **openhearth.yml config** — `config init` + `run` team radar from file
+- **Actions / URL import** — paste audit JSON URL; list artifacts for a repo
+
 ## [2.4.0] - 2026-08-02
 
 ### Added

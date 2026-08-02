@@ -111,23 +111,28 @@ function retryWaitMs(attempt: number): number {
   return Math.min(1000 * 2 ** attempt, 8_000);
 }
 
-async function githubFetch(url: string, attempt = 0): Promise<Response> {
+async function githubFetch(
+  url: string,
+  attempt = 0,
+  init: RequestInit = {}
+): Promise<Response> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    ...(init.headers as Record<string, string> | undefined),
   };
   const token = getAuthToken();
-  if (token) {
+  if (token && !headers.Authorization) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const res = await fetch(url, { headers });
+  const res = await fetch(url, { ...init, headers });
   updateRateLimit(res);
 
   if ((res.status === 403 || res.status === 429) && attempt < 2) {
     const wait = retryWaitMs(attempt + 1);
     await sleep(wait);
-    return githubFetch(url, attempt + 1);
+    return githubFetch(url, attempt + 1, init);
   }
 
   if (res.status === 403 || res.status === 429) {
@@ -146,6 +151,21 @@ async function githubFetch(url: string, attempt = 0): Promise<Response> {
   }
 
   return res;
+}
+
+/** Authenticated JSON request helper (GET/POST/…). */
+export async function githubJson<T>(
+  url: string,
+  init: RequestInit = {}
+): Promise<T> {
+  const headers: Record<string, string> = {
+    ...(init.headers as Record<string, string> | undefined),
+  };
+  if (init.body && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+  const res = await githubFetch(url, 0, { ...init, headers });
+  return (await res.json()) as T;
 }
 
 /** Probe GitHub /rate_limit (does not consume search quota meaningfully). */

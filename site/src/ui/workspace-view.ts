@@ -10,7 +10,7 @@ import {
   type AuditResult,
   type FullAuditResult,
 } from "@felix-ayush/openhearth-core";
-import { renderTrendChart, renderYearHeatmap } from "../lib/charts";
+import { renderDayHeatmap, renderTrendChart, renderYearHeatmap } from "../lib/charts";
 import { downloadText, escapeAttr, escapeHtml } from "../lib/dom";
 import { showToast } from "../lib/toast";
 import {
@@ -263,6 +263,9 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
         <p class="muted">Contributions and likely-hidden repos across saved months.</p>
         <div id="chart-panel">${renderTrendChart(listRunsChronological(workspace.id))}</div>
         <div id="year-panel">${renderYearHeatmap(listRuns(workspace.id))}</div>
+        <div id="day-panel">${renderDayHeatmap(
+          [...listRuns(workspace.id)].sort((a, b) => b.month.localeCompare(a.month))[0]?.insights.byDay
+        )}</div>
         <div id="compare-panel" class="compare-wrap">${compareBlock(workspace.id)}</div>
         <h2>Tracked months</h2>
         <div id="track-panel">${trackTable(listRuns(workspace.id))}</div>
@@ -280,6 +283,7 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
   const trackPanel = root.querySelector<HTMLElement>("#track-panel")!;
   const chartPanel = root.querySelector<HTMLElement>("#chart-panel")!;
   const yearPanel = root.querySelector<HTMLElement>("#year-panel")!;
+  const dayPanel = root.querySelector<HTMLElement>("#day-panel")!;
   const comparePanel = root.querySelector<HTMLElement>("#compare-panel")!;
 
   tokenInput.value = getStoredToken();
@@ -311,6 +315,8 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
     trackPanel.innerHTML = trackTable(listRuns(workspace.id));
     chartPanel.innerHTML = renderTrendChart(listRunsChronological(workspace.id));
     yearPanel.innerHTML = renderYearHeatmap(listRuns(workspace.id));
+    const latest = [...listRuns(workspace.id)].sort((a, b) => b.month.localeCompare(a.month))[0];
+    dayPanel.innerHTML = renderDayHeatmap(latest?.insights.byDay);
     comparePanel.innerHTML = compareBlock(workspace.id);
     trackPanel.querySelectorAll<HTMLButtonElement>("[data-del-run]").forEach((btn) => {
       btn.addEventListener("click", () => {

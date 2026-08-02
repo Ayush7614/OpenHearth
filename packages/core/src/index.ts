@@ -4,6 +4,7 @@ export {
   checkRateLimit,
   getAuthToken,
   getRateLimit,
+  githubJson,
   repoFullNameFromUrl,
   searchIssuesAll,
   searchIssuesPage,
@@ -69,6 +70,26 @@ export {
   type PortfolioCard,
   type ReportCard,
 } from "./report-card.js";
+export { createReportGist, fetchReportGist, type GistReport } from "./gist.js";
+export {
+  authSetupInstructions,
+  oauthClientId,
+  pollDeviceToken,
+  startDeviceFlow,
+  validateAuth,
+  type AuthWizardResult,
+  type DeviceCodeResponse,
+} from "./auth.js";
+export {
+  exampleConfigYaml,
+  parseConfigText,
+  type OpenHearthConfig,
+} from "./config.js";
+export {
+  fetchAuditJsonFromUrl,
+  listAuditArtifacts,
+  type ActionsArtifactHint,
+} from "./actions-import.js";
 
 export const APP_NAME = "OpenHearth";
 export const APP_TAGLINE =

@@ -95,3 +95,29 @@ export function renderYearHeatmap(runs: SavedRun[], year?: number): string {
       <div class="heat-grid">${cells}</div>
     </div>`;
 }
+
+/** Day-level heatmap from insights.byDay (latest run preferred). */
+export function renderDayHeatmap(
+  byDay: Array<{ day: string; count: number }> | undefined,
+  label = "Day activity"
+): string {
+  const days = [...(byDay ?? [])].sort((a, b) => a.day.localeCompare(b.day));
+  if (days.length === 0) {
+    return `<div class="empty chart-empty"><strong>No day heatmap</strong>Re-run an audit on 2.5+ to capture per-day activity.</div>`;
+  }
+  const max = Math.max(1, ...days.map((d) => d.count));
+  const cells = days
+    .map((d) => {
+      const intensity = Math.max(0.15, d.count / max);
+      return `<div class="heat-cell day" style="--heat:${intensity}" title="${d.day}: ${d.count}">
+        <span class="heat-label">${d.day.slice(8)}</span>
+        <strong>${d.count}</strong>
+      </div>`;
+    })
+    .join("");
+  return `
+    <div class="year-heat day-heat">
+      <div class="chart-legend"><span>${label} · ${days[0].day.slice(0, 7)}</span></div>
+      <div class="heat-grid day-grid">${cells}</div>
+    </div>`;
+}

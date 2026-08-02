@@ -1458,3 +1458,8 @@ a:hover {
   padding: 0.75rem;
   font: inherit;
 }
+
+.day-grid {
+  grid-template-columns: repeat(auto-fill, minmax(2.4rem, 1fr));
+}
+.heat-cell.day strong { font-size: 0.8rem; }

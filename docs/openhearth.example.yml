@@ -1,0 +1,7 @@
+# Example team config — copy to openhearth.yml and run: openhearth run
+users:
+  - octocat
+  - torvalds
+month: 2026-07
+# webhook: https://hooks.slack.com/services/...
+# actionsRepo: Ayush7614/OpenHearth
