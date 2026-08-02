@@ -1,6 +1,6 @@
 name: OpenHearth Contribution Audit
-description: >-
-  Audit GitHub PRs, issues, and reviews — including repos the activity feed hides.author: Ayush Kumar
+description: Audit GitHub PRs, issues, and reviews — including repos the activity feed hides.
+author: Ayush Kumar
 
 branding:
   icon: activity
