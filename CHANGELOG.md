@@ -2,6 +2,15 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.5.1] - 2026-08-02
+
+### Added
+- Root **GitHub Marketplace Action** (`action.yml`) + publish docs
+
+### Fixed
+- Align published CLI version with Action release tag **v2.5.1**
+- Marketplace description length (under 125 chars) and YAML formatting
+
 ## [2.5.0] - 2026-08-02
 
 ### Added

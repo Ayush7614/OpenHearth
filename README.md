@@ -74,7 +74,7 @@ Set `GITHUB_TOKEN` for higher rate limits.
 
 ### GitHub Action
 
-- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.5.0`  
+- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.5.1`  
   Publish steps: [`docs/github-marketplace.md`](docs/github-marketplace.md)  
   Example workflow: [`docs/marketplace-workflow-example.yml`](docs/marketplace-workflow-example.yml)
 - In this repo: `.github/workflows/audit.yml`

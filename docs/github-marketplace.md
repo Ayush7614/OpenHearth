@@ -2,7 +2,7 @@
 
 The banner **“Use this GitHub action with your project → View on Marketplace”** appears after you publish a reusable Action from a public repo that has `action.yml` at the **repository root**.
 
-OpenHearth now includes [`action.yml`](../action.yml) (composite action wrapping the npm CLI).
+OpenHearth includes [`action.yml`](../action.yml) (composite action wrapping the npm CLI).
 
 ## Requirements (GitHub)
 
@@ -21,12 +21,12 @@ Docs: https://docs.github.com/en/actions/how-tos/create-and-publish-actions/publ
 3. Click the banner **Draft a release** (or Releases → Draft)  
 4. Check **Publish this Action to the GitHub Marketplace**  
 5. Pick category (e.g. *Utilities* or *Reporting*) + icon/color (already in `action.yml`)  
-6. Tag a new release (e.g. `action-v1.0.0` or reuse `v2.5.0`) and publish  
+6. Tag a release (e.g. `v2.5.1`) and publish  
 
 After that, the repo shows **View on Marketplace**, and others can use:
 
 ```yaml
-- uses: Ayush7614/OpenHearth@v2.5.0
+- uses: Ayush7614/OpenHearth@v2.5.1
   with:
     username: Ayush7614
     month: "2026-07"
@@ -36,6 +36,6 @@ After that, the repo shows **View on Marketplace**, and others can use:
 ## Notes
 
 - Marketplace lists the **Action**, not the workflow template in `docs/github-action-template.yml`.  
-- Until npm has 2.4/2.5, keep `version: "2"` (resolves to latest published 2.x) or pin `2.3.0`.  
+- Pin the Action input `version` to an npm release (default `2.5.1`).  
 - GitHub recommends a dedicated action-only repo for the cleanest Marketplace page; a monorepo still works if root `action.yml` exists.  
 - Optional later: split `Ayush7614/openhearth-action` if you want a minimal Marketplace listing separate from the product monorepo.
