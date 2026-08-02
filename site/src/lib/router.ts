@@ -3,7 +3,8 @@ export type Route =
   | { name: "workspaces" }
   | { name: "board" }
   | { name: "workspace"; id: string }
-  | { name: "share"; payload: string };
+  | { name: "share"; payload: string }
+  | { name: "portfolio"; payload: string };
 
 export function parseHash(hash = location.hash): Route {
   const raw = hash.replace(/^#/, "") || "/";
@@ -15,6 +16,9 @@ export function parseHash(hash = location.hash): Route {
 
   const share = path.match(/^\/share\/([^/]+)\/?$/);
   if (share) return { name: "share", payload: decodeURIComponent(share[1]) };
+
+  const portfolio = path.match(/^\/portfolio\/([^/]+)\/?$/);
+  if (portfolio) return { name: "portfolio", payload: decodeURIComponent(portfolio[1]) };
 
   const m = path.match(/^\/app\/w\/([^/]+)\/?$/);
   if (m) return { name: "workspace", id: decodeURIComponent(m[1]) };
@@ -34,6 +38,8 @@ export function hrefFor(route: Route): string {
       return `#/app/w/${encodeURIComponent(route.id)}`;
     case "share":
       return `#/share/${encodeURIComponent(route.payload)}`;
+    case "portfolio":
+      return `#/portfolio/${encodeURIComponent(route.payload)}`;
   }
 }
 

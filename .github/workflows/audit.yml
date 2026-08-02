@@ -83,3 +83,25 @@ jobs:
           name: openhearth-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}
           path: audit-out/
           if-no-files-found: error
+
+      - name: Build digest
+        id: digest
+        run: |
+          DIGEST="$(npm run openhearth -- digest audit-out/audit-${{ steps.meta.outputs.username }}-${{ steps.meta.outputs.month }}.json)"
+          {
+            echo "body<<EOF"
+            echo "$DIGEST"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "$DIGEST" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post webhook digest (optional)
+        if: ${{ env.DIGEST_WEBHOOK_URL != '' }}
+        env:
+          DIGEST_WEBHOOK_URL: ${{ secrets.DIGEST_WEBHOOK_URL }}
+          DIGEST_BODY: ${{ steps.digest.outputs.body }}
+        run: |
+          # Slack incoming webhook: { "text": "..." }
+          # Discord: { "content": "..." }
+          payload=$(jq -n --arg text "$DIGEST_BODY" '{text:$text, content:$text}')
+          curl -sS -X POST -H 'Content-Type: application/json' -d "$payload" "$DIGEST_WEBHOOK_URL"

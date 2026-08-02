@@ -1,7 +1,8 @@
+import { computeRepoOverlap } from "@felix-ayush/openhearth-core";
 import { escapeHtml } from "../lib/dom";
 import { hrefFor } from "../lib/router";
 import { showToast } from "../lib/toast";
-import { listRuns, listWorkspaces, type Workspace } from "../lib/storage";
+import { createWorkspace, listRuns, listWorkspaces, type Workspace } from "../lib/storage";
 import {
   getStoredTheme,
   themeLabel,
@@ -29,6 +30,24 @@ function fmtDelta(n: number): string {
 function latestRun(wsId: string) {
   const runs = listRuns(wsId);
   return [...runs].sort((a, b) => b.month.localeCompare(a.month))[0];
+}
+
+function overlapBlock(a: Workspace, b: Workspace): string {
+  const ra = latestRun(a.id);
+  const rb = latestRun(b.id);
+  if (!ra || !rb) return "";
+  const overlap = computeRepoOverlap(a.username, ra.insights, b.username, rb.insights);
+  const shared = overlap.sharedRepos
+    .slice(0, 12)
+    .map((r) => `<li><span>${escapeHtml(r.repo)}</span><span>${r.count}</span></li>`)
+    .join("");
+  return `
+    <div class="overlap-block">
+      <h3>Shared repositories</h3>
+      <p class="muted">From latest insight snapshots (top + likely-hidden lists).</p>
+      <ul class="hidden-list">${shared || `<li class="muted">No overlap in saved insight lists</li>`}</ul>
+      <p class="muted">Only @${escapeHtml(a.username)}: ${overlap.onlyA.length} · Only @${escapeHtml(b.username)}: ${overlap.onlyB.length}</p>
+    </div>`;
 }
 
 function compareTable(a: Workspace, b: Workspace): string {
@@ -76,6 +95,7 @@ function compareTable(a: Workspace, b: Workspace): string {
           </tbody>
         </table>
       </div>
+      ${overlapBlock(a, b)}
     </div>`;
 }
 
@@ -135,9 +155,18 @@ export function renderBoard(root: HTMLElement): void {
       <div class="app-heading">
         <div>
           <h1>Multi-user board</h1>
-          <p class="muted">Compare every workspace side by side — and pick any two users for a metric table.</p>
+          <p class="muted">Team radar, compare two users, and spot shared repositories.</p>
         </div>
       </div>
+
+      <section class="compare-picker audit-form">
+        <h2>Team / org radar</h2>
+        <p class="muted">Paste GitHub usernames (newline or comma). Creates workspaces so you can audit each on the board.</p>
+        <textarea id="radar-users" rows="3" placeholder="octocat&#10;torvalds&#10;Ayush7614"></textarea>
+        <div class="form-row" style="margin-top:.75rem">
+          <button type="button" class="btn btn-ghost" id="radar-add">Add workspaces</button>
+        </div>
+      </section>
 
       <section class="compare-picker audit-form">
         <h2>Compare two users</h2>
@@ -177,6 +206,27 @@ export function renderBoard(root: HTMLElement): void {
     const label = btn.querySelector(".theme-label");
     if (icon) icon.textContent = next === "dark" ? "☀" : "☾";
     if (label) label.textContent = themeLabel(next);
+  });
+
+  root.querySelector("#radar-add")?.addEventListener("click", () => {
+    const raw = root.querySelector<HTMLTextAreaElement>("#radar-users")?.value ?? "";
+    const users = raw
+      .split(/[\s,]+/)
+      .map((u) => u.replace(/^@/, "").trim())
+      .filter(Boolean);
+    if (users.length === 0) {
+      showToast("Paste at least one username", "err");
+      return;
+    }
+    let created = 0;
+    for (const user of users) {
+      const exists = listWorkspaces().some((w) => w.username.toLowerCase() === user.toLowerCase());
+      if (exists) continue;
+      createWorkspace(`Radar · ${user}`, user);
+      created++;
+    }
+    showToast(created ? `Added ${created} workspace(s)` : "All users already have workspaces", created ? "ok" : "info");
+    renderBoard(root);
   });
 
   const selA = root.querySelector<HTMLSelectElement>("#cmp-a");

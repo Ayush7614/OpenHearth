@@ -20,26 +20,30 @@
 | <img src="docs/images/landing.jpg" alt="OpenHearth landing" width="220" /> | <img src="docs/images/workspace.jpg" alt="OpenHearth workspace with charts" width="220" /> | <img src="docs/images/board.jpg" alt="OpenHearth multi-user board compare" width="220" /> | <img src="docs/images/cli.jpg" alt="OpenHearth CLI terminal output" width="220" /> |
 
 - **Workspaces** — create a space per GitHub user, run audits, save months, chart trends, share reports, import CLI JSON  
-- **Board** — compare multiple users side by side with month-over-month deltas  
-- **CLI** — same audit engine in your terminal (`audit`, `hidden`, `doctor`)
+- **Board** — team radar, compare users, shared-repo overlap  
+- **CLI 2.4** — `audit`, `hidden`, `proof`, `radar`, `overlap`, `lens`, `share`, `portfolio`, `digest`, `forges`, `doctor`
 
 ## Why OpenHearth?
 
 GitHub’s profile activity truncates heavily (“51 repositories not shown”). Search shows lists; **OpenHearth audits** — with features that don’t exist elsewhere:
 
-- **Ranked hidden repos** — lower-activity repos past the ~25 sidebar cap
-- **Full audit** — PRs + issues + reviews in one command
+- **Public report + portfolio cards** — shareable Feed vs Search snapshots
+- **Ranked hidden repos + proof mode** — what the feed shows vs what Search found
+- **Team radar & overlap** — multi-user audits and shared repositories
+- **Repo lens** — authored vs reviews on one `owner/repo`
+- **Year timeline** — heatmap from saved months
+- **Monthly digest Action** — optional Slack/Discord webhook
+- **GitHub App scaffold + multi-forge stubs** — path to App auth and other forges
 - **Doctor + rate-limit UX** — clear fix hints when GitHub throttles you
-- **GitHub Action** — monthly/on-demand audits with JSON/CSV artifacts
 - **Auto date-splitting** — past GitHub’s 1000-result search cap
-- **JSON / CSV export**
 
 ## Install & run (CLI)
 
 ```bash
 # Quick start (no install)
 npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07
-npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07
+npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07
+npx @felix-ayush/openhearth share Ayush7614 --month 2026-07
 npx @felix-ayush/openhearth doctor
 
 # Global install
