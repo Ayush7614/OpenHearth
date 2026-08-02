@@ -12,6 +12,7 @@ import {
 } from "@felix-ayush/openhearth-core";
 import { renderTrendChart } from "../lib/charts";
 import { downloadText, escapeAttr, escapeHtml } from "../lib/dom";
+import { showToast } from "../lib/toast";
 import {
   absoluteShareUrl,
   buildStandaloneReportHtml,
@@ -239,7 +240,9 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
           </div>
         </div>
         <p class="hint">
-          Token stays in sessionStorage · same engine as <code>npx @felix-ayush/openhearth</code>
+          Token stays in <code>sessionStorage</code> (this tab only) and is sent only to
+          <code>api.github.com</code>. Same engine as <code>npx @felix-ayush/openhearth</code>.
+          Prefer a fine-grained PAT with public read — never paste tokens into chat.
         </p>
       </form>
 
@@ -493,8 +496,10 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
       const url = absoluteShareUrl(payload);
       try {
         await navigator.clipboard.writeText(url);
+        showToast("Share link copied", "ok");
         setStatus(`<span>Share link copied — opens a read-only report.</span>`);
       } catch {
+        showToast("Could not copy link", "err");
         setStatus(`<span class="error">Could not copy. URL: ${escapeHtml(url)}</span>`);
       }
     });
@@ -507,6 +512,7 @@ export function renderWorkspaceView(root: HTMLElement, workspaceId: string): voi
         buildStandaloneReportHtml(payload),
         "text/html"
       );
+      showToast("HTML report downloaded", "ok");
     });
 
     resultsEl.querySelector("#export-json")?.addEventListener("click", () => {

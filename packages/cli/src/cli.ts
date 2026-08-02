@@ -99,6 +99,8 @@ Unique features:
   · Ranks likely-hidden repos (lowest activity past the ~25 sidebar cap)
   · Auto-splits date ranges past GitHub's 1000-result search cap
   · Full audit: PRs + issues + reviews in one run
+  · Retries briefly on Search API rate limits
+  · Import JSON into browser workspaces: openhearth audit USER --json out.json
 `;
 }
 

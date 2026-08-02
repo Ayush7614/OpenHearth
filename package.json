@@ -18,7 +18,8 @@
     "dev:site": "npm run dev -w @openhearth/site",
     "dev:cli": "npm run build:cli && npm run start -w @felix-ayush/openhearth --",
     "openhearth": "npm run start -w @felix-ayush/openhearth --",
-    "publish:packages": "npm run build:cli && npm publish -w @felix-ayush/openhearth --access public"
+    "publish:packages": "npm run build:cli && npm publish -w @felix-ayush/openhearth --access public",
+    "test": "npm run test -w @felix-ayush/openhearth-core"
   },
   "devDependencies": {
     "typescript": "^5.8.2"

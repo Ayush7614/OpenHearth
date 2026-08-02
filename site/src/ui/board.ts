@@ -1,6 +1,7 @@
 import { escapeHtml } from "../lib/dom";
 import { hrefFor } from "../lib/router";
-import { listRuns, listWorkspaces } from "../lib/storage";
+import { showToast } from "../lib/toast";
+import { listRuns, listWorkspaces, type Workspace } from "../lib/storage";
 import {
   getStoredTheme,
   themeLabel,
@@ -25,8 +26,64 @@ function fmtDelta(n: number): string {
   return String(n);
 }
 
+function latestRun(wsId: string) {
+  const runs = listRuns(wsId);
+  return [...runs].sort((a, b) => b.month.localeCompare(a.month))[0];
+}
+
+function compareTable(a: Workspace, b: Workspace): string {
+  const ra = latestRun(a.id);
+  const rb = latestRun(b.id);
+  if (!ra || !rb) {
+    return `<div class="empty"><strong>Need saved runs</strong>Both users need at least one saved month.</div>`;
+  }
+
+  const rows: Array<[string, number, number]> = [
+    ["Total contributions", ra.insights.totalContributions, rb.insights.totalContributions],
+    ["Unique repos", ra.insights.uniqueRepos, rb.insights.uniqueRepos],
+    ["Likely hidden", ra.insights.reposHiddenByFeed, rb.insights.reposHiddenByFeed],
+    ["Merge rate %", ra.insights.mergeRate, rb.insights.mergeRate],
+    ["PRs", ra.insights.byKind.pr, rb.insights.byKind.pr],
+    ["Issues", ra.insights.byKind.issue, rb.insights.byKind.issue],
+    ["Reviews", ra.insights.byKind.review, rb.insights.byKind.review],
+  ];
+
+  return `
+    <div class="compare-users">
+      <p class="muted">Comparing latest saves: <strong>@${escapeHtml(a.username)}</strong> ${escapeHtml(ra.month)} vs <strong>@${escapeHtml(b.username)}</strong> ${escapeHtml(rb.month)}</p>
+      <div class="track-wrap">
+        <table class="track-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>@${escapeHtml(a.username)}</th>
+              <th>@${escapeHtml(b.username)}</th>
+              <th>Δ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows
+              .map(([label, va, vb]) => {
+                const d = va - vb;
+                return `<tr>
+                  <td>${escapeHtml(label)}</td>
+                  <td>${va}</td>
+                  <td>${vb}</td>
+                  <td><em class="${deltaClass(d)}">${fmtDelta(d)}</em></td>
+                </tr>`;
+              })
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
 export function renderBoard(root: HTMLElement): void {
   const workspaces = listWorkspaces();
+  const options = workspaces
+    .map((w) => `<option value="${escapeHtml(w.id)}">@${escapeHtml(w.username)} — ${escapeHtml(w.name)}</option>`)
+    .join("");
 
   const cards = workspaces
     .map((ws) => {
@@ -78,13 +135,33 @@ export function renderBoard(root: HTMLElement): void {
       <div class="app-heading">
         <div>
           <h1>Multi-user board</h1>
-          <p class="muted">Compare every workspace side by side — latest month and change vs previous save.</p>
+          <p class="muted">Compare every workspace side by side — and pick any two users for a metric table.</p>
         </div>
       </div>
+
+      <section class="compare-picker audit-form">
+        <h2>Compare two users</h2>
+        <div class="form-row ws-create-row">
+          <div class="field">
+            <label for="cmp-a">User A</label>
+            <select id="cmp-a">${options}</select>
+          </div>
+          <div class="field">
+            <label for="cmp-b">User B</label>
+            <select id="cmp-b">${options}</select>
+          </div>
+          <div class="field field-action">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary" id="cmp-run" ${workspaces.length < 2 ? "disabled" : ""}>Compare</button>
+          </div>
+        </div>
+        <div id="cmp-out"></div>
+      </section>
+
       <section class="board-grid">
         ${
           workspaces.length === 0
-            ? `<div class="empty"><strong>No workspaces</strong>Create workspaces first, save a few months, then return here.</div>`
+            ? `<div class="empty"><strong>No workspaces</strong>Create workspaces first (or load demo data from Workspaces), then return here.</div>`
             : cards
         }
       </section>
@@ -100,5 +177,24 @@ export function renderBoard(root: HTMLElement): void {
     const label = btn.querySelector(".theme-label");
     if (icon) icon.textContent = next === "dark" ? "☀" : "☾";
     if (label) label.textContent = themeLabel(next);
+  });
+
+  const selA = root.querySelector<HTMLSelectElement>("#cmp-a");
+  const selB = root.querySelector<HTMLSelectElement>("#cmp-b");
+  if (selA && selB && workspaces.length >= 2) {
+    selB.selectedIndex = Math.min(1, workspaces.length - 1);
+  }
+
+  root.querySelector("#cmp-run")?.addEventListener("click", () => {
+    const a = workspaces.find((w) => w.id === selA?.value);
+    const b = workspaces.find((w) => w.id === selB?.value);
+    const out = root.querySelector("#cmp-out");
+    if (!a || !b || !out) return;
+    if (a.id === b.id) {
+      showToast("Pick two different users", "err");
+      return;
+    }
+    out.innerHTML = compareTable(a, b);
+    showToast(`Compared @${a.username} vs @${b.username}`, "ok");
   });
 }
