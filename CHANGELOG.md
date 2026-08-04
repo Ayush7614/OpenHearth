@@ -2,6 +2,21 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.6.0] - 2026-08-04
+
+### Added
+- **AI summaries** — `openhearth audit|hidden|proof|digest --ai-summary` generates an
+  evidence-cited narrative of the audit (ROADMAP #1, #7)
+- **Share-card caption generator** — `openhearth share|portfolio --ai-summary` prints a
+  compact, paste-ready LinkedIn/X/README blurb with the report URL (ROADMAP #4)
+- **LLM adapter layer** — pluggable providers via `OPENHEARTH_LLM` / `--ai-provider`:
+  built-in template (default, fully offline), Ollama, OpenAI, Anthropic (ROADMAP #18, #19)
+- **AI safety card + transparency disclosure** — every AI summary states what leaves the
+  machine and that GitHub tokens are never sent to model providers (ROADMAP #106, #115)
+- **Tone presets** — `--ai-tone neutral|hiring|humble|technical|exec` (ROADMAP #6)
+- `digest <audit.json> --ai-summary` narrates any saved audit (no GitHub API needed)
+- Core unit tests for the AI summary, evidence, safety card, and LLM config layers
+
 ## [2.5.1] - 2026-08-02
 
 ### Added

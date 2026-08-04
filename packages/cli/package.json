@@ -1,6 +1,6 @@
 {
   "name": "@felix-ayush/openhearth",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "CLI to audit every GitHub PR, issue, and review — find repos hidden from your activity feed (\"N repositories not shown\")",
   "type": "module",
   "bin": {
