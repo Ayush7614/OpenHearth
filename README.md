@@ -134,7 +134,7 @@ docs/            Images + GitHub Action template for other repos
 ```bash
 npm login                  # must be felix-ayush (scoped package owner)
 npm whoami                 # expect: felix-ayush
-npm run publish:packages   # publishes @felix-ayush/openhearth@2.6.0
+npm run publish:packages   # publishes @felix-ayush/openhearth@2.6.1
 # with 2FA: npm publish -w @felix-ayush/openhearth --access public --otp=CODE
 ```
 
