@@ -52,6 +52,13 @@ export {
 } from "./export.js";
 
 export { buildFeedSearchProof, type FeedSearchProof } from "./proof.js";
+export {
+  buildHiddenRepoExplanations,
+  buildProofNarration,
+  type HiddenRepoExplanation,
+  type HiddenRepoSeverity,
+  type ProofNarration,
+} from "./explain.js";
 export { computeRepoOverlap, type OverlapResult } from "./overlap.js";
 export { formatDigestMarkdown, formatDigestPlain } from "./digest.js";
 export { defaultLensRange, runRepoLens, type RepoLensResult } from "./lens.js";

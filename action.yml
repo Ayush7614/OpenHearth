@@ -26,6 +26,14 @@ inputs:
     description: Directory for JSON/CSV outputs
     required: false
     default: openhearth-out
+  ai-summary:
+    description: Generate an AI narrative of the audit and append it to the job summary
+    required: false
+    default: "false"
+  ai-tone:
+    description: Tone for the AI summary — neutral|hiring|humble|technical|exec
+    required: false
+    default: "neutral"
 
 outputs:
   month:
@@ -73,6 +81,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
         OH_VERSION: ${{ inputs.version }}
+        AI_SUMMARY: ${{ inputs.ai-summary }}
+        AI_TONE: ${{ inputs.ai-tone }}
         USERNAME: ${{ steps.meta.outputs.username }}
         MONTH: ${{ steps.meta.outputs.month }}
         JSON_PATH: ${{ steps.meta.outputs.json_path }}
@@ -87,4 +97,8 @@ runs:
         npx --yes "@felix-ayush/openhearth@${OH_VERSION}" hidden "${USERNAME}" \
           --month "${MONTH}" \
           --json "${OUT_DIR}/hidden-${USERNAME}-${MONTH}.json"
+        if [ "${AI_SUMMARY}" = "true" ]; then
+          npx --yes "@felix-ayush/openhearth@${OH_VERSION}" digest "${JSON_PATH}" \
+            --ai-summary --ai-tone "${AI_TONE}" >> "$GITHUB_STEP_SUMMARY" || true
+        fi
         npx --yes "@felix-ayush/openhearth@${OH_VERSION}" digest "${JSON_PATH}" >> "$GITHUB_STEP_SUMMARY" || true

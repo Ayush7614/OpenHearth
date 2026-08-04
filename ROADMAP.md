@@ -2,7 +2,7 @@
 
 **Product north star:** Make every GitHub contribution visible — then make it *understandable* with AI agents that audit, explain, compare, and act.
 
-**Current release:** `2.6.0` (CLI + browser workspaces + Marketplace Action + AI summaries)  
+**Current release:** `2.6.1` (hidden-repo explainer + proof narration + Marketplace AI inputs)  
 **This document:** full-fledged roadmap (**125 features**) with a heavy **LLM / AI / Agents** track.
 
 Status legend:
@@ -33,7 +33,7 @@ Priority: `P0` must-have · `P1` strong · `P2` stretch · `P3` explore
 | # | Feature | Priority | Status | Notes |
 | --- | --- | --- | --- | --- |
 | 1 | Monthly audit **AI summary** (CLI `--ai-summary`) | P0 | shipped | Local or API model; cite repo counts |
-| 2 | **Hidden-repo explainer** — why each repo was likely truncated | P0 | next | Uses ranked activity + heuristics |
+| 2 | **Hidden-repo explainer** — why each repo was likely truncated | P0 | shipped | Ranked activity + feed cap heuristics |
 | 3 | **Natural-language Q&A** over a saved month (`ask "what changed?"`) | P0 | next | RAG over insights + top items |
 | 4 | **Share-card caption generator** (LinkedIn / X / README blurb) | P0 | shipped | One-click from share/portfolio `--ai-summary` |
 | 5 | **Multi-month narrative** (“your year in OSS”) | P1 | planned | Needs year audit + byDay |
@@ -118,7 +118,7 @@ Priority: `P0` must-have · `P1` strong · `P2` stretch · `P3` explore
 | 63 | **Smart empty states** with suggested prompts | P1 | next | |
 | 64 | **Chart annotations** by LLM | P2 | planned | |
 | 65 | **Day heatmap story** (“busy weeks explained”) | P1 | planned | |
-| 66 | **Proof mode narration** (feed vs search) | P0 | next | |
+| 66 | **Proof mode narration** (feed vs search) | P0 | shipped | Deterministic gap narrative |
 | 67 | **Voice input** for ask (Web Speech) | P3 | horizon | |
 | 68 | **Accessible plain-language mode** | P1 | planned | |
 | 69 | **Dark/light aware report themes** for AI HTML | P2 | next | |
@@ -204,7 +204,7 @@ Priority: `P0` must-have · `P1` strong · `P2` stretch · `P3` explore
 | 119 | University workshop kit | P2 | planned | |
 | 120 | **OpenHearth Protocol** — JSON schema for audits + AI layers | P0 | next | Stabilizes ecosystem |
 | 121 | Plugin API for community agents | P1 | planned | |
-| 122 | Marketplace Action: AI summary input flag | P1 | next | |
+| 122 | Marketplace Action: AI summary input flag | P1 | shipped | `ai-summary` + `ai-tone` inputs on composite action |
 | 123 | npm `create-openhearth` scaffolder | P2 | planned | |
 | 124 | Telemetry (opt-in) for feature demand | P2 | planned | Privacy-first |
 | 125 | Roadmap voting via Discussions | P1 | next | |

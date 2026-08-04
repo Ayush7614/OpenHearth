@@ -14,12 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run OpenHearth
-        uses: Ayush7614/OpenHearth@v2.6.0
+        uses: Ayush7614/OpenHearth@v2.6.1
         with:
           username: ${{ github.repository_owner }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # month: "2026-07"
-          # version: "2.6.0"
+          # version: "2.6.1"
+          ai-summary: true
+          ai-tone: neutral
 
       - name: Upload outputs
         uses: actions/upload-artifact@v4

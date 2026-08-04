@@ -4,6 +4,8 @@ import type {
   AuditInsights,
   AuditSummary,
   FullAuditResult,
+  HiddenRepoExplanation,
+  ProofNarration,
 } from "@felix-ayush/openhearth-core";
 
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
@@ -264,4 +266,38 @@ export function printAISummary(summary: AuditSummary): void {
   }
   console.log("");
   printAISafetyCard(summary.safetyCard);
+}
+
+const SEVERITY_COLOR: Record<string, (s: string) => string> = {
+  high: red,
+  medium: amber,
+  low: dim,
+};
+
+export function printHiddenExplanations(explanations: HiddenRepoExplanation[]): void {
+  if (explanations.length === 0) return;
+  console.log(bold("  Why these repos are likely hidden") + dim(" · --ai-explain"));
+  console.log("");
+  for (const ex of explanations.slice(0, 10)) {
+    const sev = SEVERITY_COLOR[ex.severity] ?? dim;
+    console.log(`  ${sev("▸")} ${ex.repo} ${dim(`(${ex.count})`)}`);
+    for (const reason of ex.reasons) {
+      console.log(`      ${dim("·")} ${dim(reason)}`);
+    }
+  }
+  if (explanations.length > 10) {
+    console.log(dim(`  … and ${explanations.length - 10} more`));
+  }
+  console.log("");
+}
+
+export function printProofNarration(narration: ProofNarration): void {
+  console.log(bold("  Proof narration") + dim(` · ${narration.headline}`));
+  console.log("");
+  for (const line of narration.body) {
+    console.log(`  ${dim(line)}`);
+    console.log("");
+  }
+  console.log(`  ${amber(narration.verdict)}`);
+  console.log("");
 }
