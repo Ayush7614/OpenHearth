@@ -17,6 +17,11 @@ All notable changes to OpenHearth are documented here.
 - `digest <audit.json> --ai-summary` narrates any saved audit (no GitHub API needed)
 - Core unit tests for the AI summary, evidence, safety card, and LLM config layers
 
+### Fixed
+- Marketplace Action `action.yml`: restore broken `working-directory` input (was merged onto the
+  `version` default line) and pin default npm CLI version to **2.6.0**
+- CLI `package.json` `bin.openhearth` path cleaned for npm publish (`dist/cli.js`)
+
 ## [2.5.1] - 2026-08-02
 
 ### Added
