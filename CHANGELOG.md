@@ -2,6 +2,16 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.6.1] - 2026-08-05
+
+### Added
+- **Hidden-repo explainer** (`hidden --ai-explain`) — per-repo deterministic heuristics explaining why each repo was likely truncated (rank, activity count vs feed cap, severity). ROADMAP #2
+- **Proof mode narration** (`proof --ai-summary`) — feed-vs-search gap narrative with evidence citations and a verdict. ROADMAP #66
+- **Marketplace Action AI summary inputs** — `ai-summary` and `ai-tone` inputs on the composite `action.yml` so workflows can request AI narration without CLI flags. ROADMAP #122
+
+### Changed
+- CLI examples updated to demonstrate `--ai-explain` and `--ai-summary` on `hidden`/`proof` commands
+
 ## [2.6.0] - 2026-08-04
 
 ### Added

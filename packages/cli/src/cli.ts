@@ -7,7 +7,9 @@ import {
   auditToJson,
   bitbucketForge,
   buildFeedSearchProof,
+  buildHiddenRepoExplanations,
   buildPortfolioCard,
+  buildProofNarration,
   buildReportCard,
   buildShareCaption,
   checkRateLimit,
@@ -44,7 +46,9 @@ import {
   type ForgeId,
   type FullAuditResult,
   type GistReport,
+  type HiddenRepoExplanation,
   type LLMProviderId,
+  type ProofNarration,
   type ShareCaption,
   type SummaryTone,
 } from "@felix-ayush/openhearth-core";
@@ -56,12 +60,14 @@ import {
   printDoctor,
   printError,
   printFullReport,
+  printHiddenExplanations,
   printInsights,
   printLens,
   printLikelyHidden,
   printOverlap,
   printProgress,
   printProof,
+  printProofNarration,
   printRadarRow,
 } from "./format.js";
 
@@ -100,6 +106,7 @@ type CliOptions = {
   configPath?: string;
   forge: ForgeId;
   aiSummary: boolean;
+  aiExplain: boolean;
   aiTone?: SummaryTone;
   aiProvider?: LLMProviderId;
   aiModel?: string;
@@ -174,6 +181,7 @@ Options:
   --gist              Publish share/portfolio card to a public gist (short URL)
   --forge github|gitlab|bitbucket   Default: github
   --ai-summary        Generate an AI narrative of the audit (default: local template)
+  --ai-explain        Explain why each hidden repo was likely truncated (hidden command)
   --ai-tone T         neutral|hiring|humble|technical|exec (default: neutral)
   --ai-provider P     stub|ollama|openai|anthropic (default: stub / OPENHEARTH_LLM)
   --ai-model NAME     Model name (default per provider; or OPENHEARTH_LLM_MODEL)
@@ -190,6 +198,8 @@ Examples:
   npx @felix-ayush/openhearth lens Ayush7614 microsoft/vscode --year 2025
   npx @felix-ayush/openhearth share Ayush7614 --month 2026-07
   npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary
+  npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07 --ai-explain
+  npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07 --ai-summary
   npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary --ai-tone hiring
 `;
 }
@@ -220,6 +230,7 @@ function parseArgs(argv: string[]): CliOptions {
     kind: "all",
     forge: "github",
     aiSummary: false,
+    aiExplain: false,
     gist: false,
     quiet: false,
     help: false,
@@ -280,6 +291,10 @@ function parseArgs(argv: string[]): CliOptions {
     }
     if (arg === "--ai-summary") {
       opts.aiSummary = true;
+      continue;
+    }
+    if (arg === "--ai-explain") {
+      opts.aiExplain = true;
       continue;
     }
     if (arg === "--ai-tone" && argv[i + 1]) {
@@ -650,18 +665,40 @@ async function main(): Promise<void> {
 
     if (opts.command === "proof" || opts.command === "hidden") {
       const full = await auditUser(opts.username, range, onProgress);
+      const proof = buildFeedSearchProof(full.insights);
+      let explanations: HiddenRepoExplanation[] | undefined;
+      let narration: ProofNarration | undefined;
       if (!opts.quiet) {
         printInsights(full.insights, `@${opts.username} · ${label}`);
-        if (opts.command === "proof") printProof(buildFeedSearchProof(full.insights));
-        else {
+        if (opts.command === "proof") {
+          printProof(proof);
+          if (opts.aiSummary) {
+            narration = buildProofNarration(proof, full.insights);
+            printProofNarration(narration);
+          }
+        } else {
           printLikelyHidden(full.insights);
+          if (opts.aiExplain) {
+            explanations = buildHiddenRepoExplanations(full.insights);
+            printHiddenExplanations(explanations);
+          }
           console.log(`  ${full.insights.feedTruncationNote}\n`);
         }
       }
       const summary = await maybeAISummary(full.insights, full.username, label, opts);
       if (summary && !opts.quiet) printAISummary(summary);
-      if (opts.json) writeOutput(withSummary(fullAuditToJson(full), summary), opts.json);
-      if (opts.csv) writeOutput(fullAuditToCsv(full), opts.csv);
+      if (opts.json || opts.csv) {
+        let json = fullAuditToJson(full);
+        if (summary) json = withSummary(json, summary);
+        if (explanations || narration) {
+          const obj = JSON.parse(json) as Record<string, unknown>;
+          if (explanations) obj.hiddenRepoExplanations = explanations;
+          if (narration) obj.proofNarration = narration;
+          json = JSON.stringify(obj, null, 2);
+        }
+        if (opts.json) writeOutput(json, opts.json);
+        if (opts.csv) writeOutput(fullAuditToCsv(full), opts.csv);
+      }
       return;
     }
 

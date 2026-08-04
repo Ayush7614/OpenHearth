@@ -46,6 +46,8 @@ npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07
 npx @felix-ayush/openhearth share Ayush7614 --month 2026-07
 npx @felix-ayush/openhearth doctor
 npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary
+npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07 --ai-explain
+npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07 --ai-summary
 npx @felix-ayush/openhearth share Ayush7614 --month 2026-07 --ai-summary --ai-tone hiring
 
 # Global install
@@ -71,6 +73,7 @@ Set `GITHUB_TOKEN` for higher rate limits.
 | `--from` / `--to` | Custom date range |
 | `--kind pr\|issue\|review\|all` | Filter by type |
 | `--ai-summary` | Generate an AI narrative of the audit |
+| `--ai-explain` | Explain why each hidden repo was likely truncated (`hidden` command) |
 | `--ai-tone T` | neutral\|hiring\|humble\|technical\|exec |
 | `--ai-provider P` | stub\|ollama\|openai\|anthropic (default: stub) |
 | `--json [file]` | Export JSON |
@@ -79,7 +82,7 @@ Set `GITHUB_TOKEN` for higher rate limits.
 
 ### GitHub Action
 
-- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.6.0`  
+- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.6.1`  
   Publish steps: [`docs/github-marketplace.md`](docs/github-marketplace.md)  
   Example workflow: [`docs/marketplace-workflow-example.yml`](docs/marketplace-workflow-example.yml)
 - In this repo: `.github/workflows/audit.yml`
@@ -92,8 +95,8 @@ Optional npm publish when the `NPM_TOKEN` secret is set.
 
 ```bash
 # After merging to main
-git tag v2.6.0
-git push origin v2.6.0
+git tag v2.6.1
+git push origin v2.6.1
 ```
 
 See [CHANGELOG.md](CHANGELOG.md) · [ROADMAP.md](ROADMAP.md) (125 features, AI/agents-first).

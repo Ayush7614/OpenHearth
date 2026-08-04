@@ -1,6 +1,6 @@
 {
   "name": "@felix-ayush/openhearth-core",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "private": true,
   "description": "Internal audit engine — bundled into @felix-ayush/openhearth (not published).",
   "type": "module",
