@@ -91,6 +91,32 @@ export {
   type ActionsArtifactHint,
 } from "./actions-import.js";
 
+export {
+  LLMError,
+  createLLMClient,
+  resolveLLMConfig,
+  type LLMCompleteOptions,
+  type LLMConfig,
+  type LLMMessage,
+  type LLMProvider,
+  type LLMProviderId,
+} from "./llm.js";
+
+export {
+  buildAISafetyCard,
+  buildEvidence,
+  buildShareCaption,
+  buildSummaryPrompt,
+  generateAuditSummary,
+  templateSummary,
+  type AISafetyCard,
+  type AuditSummary,
+  type EvidenceCitation,
+  type ShareCaption,
+  type SummaryOptions,
+  type SummaryTone,
+} from "./ai-summary.js";
+
 export const APP_NAME = "OpenHearth";
 export const APP_TAGLINE =
   "A cozy open-source contribution audit — find every PR, issue, and review GitHub's activity feed hides.";

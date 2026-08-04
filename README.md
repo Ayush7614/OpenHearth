@@ -45,6 +45,8 @@ npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07
 npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07
 npx @felix-ayush/openhearth share Ayush7614 --month 2026-07
 npx @felix-ayush/openhearth doctor
+npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary
+npx @felix-ayush/openhearth share Ayush7614 --month 2026-07 --ai-summary --ai-tone hiring
 
 # Global install
 npm install -g @felix-ayush/openhearth
@@ -68,6 +70,9 @@ Set `GITHUB_TOKEN` for higher rate limits.
 | `--month YYYY-MM` | Audit a calendar month |
 | `--from` / `--to` | Custom date range |
 | `--kind pr\|issue\|review\|all` | Filter by type |
+| `--ai-summary` | Generate an AI narrative of the audit |
+| `--ai-tone T` | neutral\|hiring\|humble\|technical\|exec |
+| `--ai-provider P` | stub\|ollama\|openai\|anthropic (default: stub) |
 | `--json [file]` | Export JSON |
 | `--csv [file]` | Export CSV |
 | `-V, --version` | Print CLI version |
@@ -91,7 +96,7 @@ git tag v2.3.0
 git push origin v2.3.0
 ```
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](CHANGELOG.md) · [ROADMAP.md](ROADMAP.md) (125 features, AI/agents-first).
 
 ## Website (docs + workspaces)
 

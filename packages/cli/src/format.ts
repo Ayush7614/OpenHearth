@@ -1,4 +1,10 @@
-import type { AuditResult, AuditInsights, FullAuditResult } from "@felix-ayush/openhearth-core";
+import type {
+  AISafetyCard,
+  AuditResult,
+  AuditInsights,
+  AuditSummary,
+  FullAuditResult,
+} from "@felix-ayush/openhearth-core";
 
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`;
@@ -235,4 +241,27 @@ export function printRadarRow(username: string, insights: {
   console.log(
     `  @${username.padEnd(16)} total ${String(insights.totalContributions).padStart(4)} · repos ${String(insights.uniqueRepos).padStart(3)} · hidden ~${String(insights.reposHiddenByFeed).padStart(3)} · merge ${insights.mergeRate}%`
   );
+}
+
+export function printAISafetyCard(card: AISafetyCard): void {
+  console.log(bold("  AI safety card") + dim(` · ${card.provider}/${card.model}`));
+  console.log(
+    dim(`  ${card.localOnly ? "Local-only" : "Cloud provider"} · ${card.whatLeavesMachine}`)
+  );
+  console.log(dim(`  ${card.tokensNeverSent}`));
+  console.log(dim(`  ${card.transparencyDisclosure}`));
+  console.log("");
+}
+
+export function printAISummary(summary: AuditSummary): void {
+  console.log(
+    bold("  AI summary") +
+      dim(` · ${summary.provider}/${summary.model} · ${summary.generatedAt}`)
+  );
+  console.log("");
+  for (const line of summary.text.split("\n")) {
+    console.log(`  ${line}`);
+  }
+  console.log("");
+  printAISafetyCard(summary.safetyCard);
 }

@@ -9,6 +9,7 @@ import {
   buildFeedSearchProof,
   buildPortfolioCard,
   buildReportCard,
+  buildShareCaption,
   checkRateLimit,
   computeRepoOverlap,
   defaultLensRange,
@@ -20,6 +21,8 @@ import {
   formatDigestPlain,
   fullAuditToCsv,
   fullAuditToJson,
+  createLLMClient,
+  generateAuditSummary,
   getAuthToken,
   githubForge,
   gitlabForge,
@@ -37,10 +40,17 @@ import {
   type AuditInsights,
   type AuditKind,
   type DateRange,
+  type AuditSummary,
   type ForgeId,
   type FullAuditResult,
+  type GistReport,
+  type LLMProviderId,
+  type ShareCaption,
+  type SummaryTone,
 } from "@felix-ayush/openhearth-core";
 import {
+  printAISafetyCard,
+  printAISummary,
   printAuditSection,
   printBanner,
   printDoctor,
@@ -89,6 +99,10 @@ type CliOptions = {
   usersFile?: string;
   configPath?: string;
   forge: ForgeId;
+  aiSummary: boolean;
+  aiTone?: SummaryTone;
+  aiProvider?: LLMProviderId;
+  aiModel?: string;
   gist: boolean;
   quiet: boolean;
   help: boolean;
@@ -139,7 +153,7 @@ Commands:
   radar       Team/org multi-user audit from a username list
   overlap     Shared repos between two users (from live audits)
   lens        Contributor lens for one repository
-  digest      Slack/Discord markdown from an audit JSON file
+  digest      Slack/Discord markdown from an audit JSON file (--ai-summary supported)
   share       Public report-card URL (add --gist for short #/r/:id)
   portfolio   Hiring/portfolio card URL (--gist supported)
   config      Print example openhearth.yml (config init writes file)
@@ -159,6 +173,10 @@ Options:
   --config PATH       openhearth.yml / .json for run
   --gist              Publish share/portfolio card to a public gist (short URL)
   --forge github|gitlab|bitbucket   Default: github
+  --ai-summary        Generate an AI narrative of the audit (default: local template)
+  --ai-tone T         neutral|hiring|humble|technical|exec (default: neutral)
+  --ai-provider P     stub|ollama|openai|anthropic (default: stub / OPENHEARTH_LLM)
+  --ai-model NAME     Model name (default per provider; or OPENHEARTH_LLM_MODEL)
   --json [file]       Export JSON (stdout if no file)
   --csv [file]        Export CSV (stdout if no file)
   --quiet             Minimal output
@@ -171,6 +189,8 @@ Examples:
   npx @felix-ayush/openhearth radar --users-file team.txt --month 2026-07
   npx @felix-ayush/openhearth lens Ayush7614 microsoft/vscode --year 2025
   npx @felix-ayush/openhearth share Ayush7614 --month 2026-07
+  npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary
+  npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary --ai-tone hiring
 `;
 }
 
@@ -199,6 +219,7 @@ function parseArgs(argv: string[]): CliOptions {
     repo: "",
     kind: "all",
     forge: "github",
+    aiSummary: false,
     gist: false,
     quiet: false,
     help: false,
@@ -255,6 +276,22 @@ function parseArgs(argv: string[]): CliOptions {
     }
     if (arg === "--config" && argv[i + 1]) {
       opts.configPath = argv[++i];
+      continue;
+    }
+    if (arg === "--ai-summary") {
+      opts.aiSummary = true;
+      continue;
+    }
+    if (arg === "--ai-tone" && argv[i + 1]) {
+      opts.aiTone = argv[++i] as SummaryTone;
+      continue;
+    }
+    if (arg === "--ai-provider" && argv[i + 1]) {
+      opts.aiProvider = argv[++i] as LLMProviderId;
+      continue;
+    }
+    if (arg === "--ai-model" && argv[i + 1]) {
+      opts.aiModel = argv[++i];
       continue;
     }
     if (arg === "--gist") {
@@ -355,6 +392,37 @@ async function auditUser(
   onProgress?: (msg: string) => void
 ): Promise<FullAuditResult> {
   return runFullAudit(username, range, runAudit, onProgress);
+}
+
+function aiProviderFor(opts: CliOptions) {
+  return createLLMClient({ provider: opts.aiProvider, model: opts.aiModel });
+}
+
+async function maybeAISummary(
+  insights: AuditInsights,
+  username: string,
+  label: string,
+  opts: CliOptions
+): Promise<AuditSummary | undefined> {
+  if (!opts.aiSummary) return undefined;
+  try {
+    return await generateAuditSummary(
+      insights,
+      `@${username} · ${label}`,
+      aiProviderFor(opts),
+      { tone: opts.aiTone }
+    );
+  } catch (err) {
+    printError(`AI summary failed: ${err instanceof Error ? err.message : String(err)}`);
+    return undefined;
+  }
+}
+
+function withSummary(json: string, summary?: AuditSummary): string {
+  if (!summary) return json;
+  const obj = JSON.parse(json) as Record<string, unknown>;
+  obj.aiSummary = summary;
+  return JSON.stringify(obj, null, 2);
 }
 
 async function main(): Promise<void> {
@@ -493,6 +561,13 @@ async function main(): Promise<void> {
       console.log(md);
       console.error("");
       console.error(formatDigestPlain({ username: data.username, label, insights: data.insights }));
+      if (opts.aiSummary) {
+        const summary = await maybeAISummary(data.insights, data.username, label, opts);
+        if (summary) {
+          console.error("");
+          printAISummary(summary);
+        }
+      }
       return;
     }
 
@@ -583,7 +658,9 @@ async function main(): Promise<void> {
           console.log(`  ${full.insights.feedTruncationNote}\n`);
         }
       }
-      if (opts.json) writeOutput(fullAuditToJson(full), opts.json);
+      const summary = await maybeAISummary(full.insights, full.username, label, opts);
+      if (summary && !opts.quiet) printAISummary(summary);
+      if (opts.json) writeOutput(withSummary(fullAuditToJson(full), summary), opts.json);
       if (opts.csv) writeOutput(fullAuditToCsv(full), opts.csv);
       return;
     }
@@ -594,27 +671,59 @@ async function main(): Promise<void> {
         opts.command === "portfolio"
           ? buildPortfolioCard(opts.username, label, full.insights)
           : buildReportCard(opts.username, label, full.insights);
+      let url: string;
+      let gist: GistReport | undefined;
       if (opts.gist) {
-        const gist = await createReportGist(card);
-        const shortUrl = `${SITE_BASE}#/r/${gist.id}`;
-        console.log(shortUrl);
+        gist = await createReportGist(card);
+        url = `${SITE_BASE}#/r/${gist.id}`;
+        console.log(url);
         console.error(`  Gist: ${gist.htmlUrl}`);
-        if (opts.json) writeOutput(JSON.stringify({ url: shortUrl, gist, card }, null, 2), opts.json);
-        return;
+      } else {
+        const encoded = encodeCardPayload(card);
+        url = cardUrl(opts.command === "portfolio" ? "portfolio" : "share", encoded);
+        console.log(url);
       }
-      const encoded = encodeCardPayload(card);
-      const url = cardUrl(opts.command === "portfolio" ? "portfolio" : "share", encoded);
-      console.log(url);
-      if (opts.json) writeOutput(JSON.stringify({ url, card }, null, 2), opts.json);
+      let summary: AuditSummary | undefined;
+      let caption: ShareCaption | undefined;
+      if (opts.aiSummary) {
+        summary = await maybeAISummary(full.insights, full.username, label, opts);
+        if (summary) {
+          caption = buildShareCaption(summary, url);
+          console.error("");
+          console.error(`  Caption (${caption.platform}):`);
+          for (const line of caption.text.split("\n")) console.error(`  ${line}`);
+          console.error("");
+        }
+      }
+      if (opts.json) {
+        const out: Record<string, unknown> = { url, card };
+        if (gist) out.gist = gist;
+        if (summary) out.aiSummary = summary;
+        if (caption) out.caption = caption;
+        writeOutput(JSON.stringify(out, null, 2), opts.json);
+      }
       return;
     }
 
-    // audit (default)
-    if (opts.kind === "all") {
+    // audit (default) — full audit when --kind all OR --ai-summary (summary needs insights)
+    if (opts.kind === "all" || opts.aiSummary) {
       const full = await auditUser(opts.username, range, onProgress);
-      if (opts.json) writeOutput(fullAuditToJson(full), opts.json);
+      const summary = await maybeAISummary(full.insights, full.username, label, opts);
+      if (opts.json) writeOutput(withSummary(fullAuditToJson(full), summary), opts.json);
       if (opts.csv) writeOutput(fullAuditToCsv(full), opts.csv);
-      if (!opts.quiet && !opts.json && !opts.csv) printFullReport(full, label);
+      if (!opts.quiet && !opts.json && !opts.csv) {
+        if (opts.kind === "all") {
+          printFullReport(full, label);
+        } else {
+          const kindResult =
+            opts.kind === "pr" ? full.pullRequests : opts.kind === "issue" ? full.issues : full.reviews;
+          printAuditSection(
+            opts.kind === "pr" ? "Pull requests" : opts.kind === "issue" ? "Issues" : "Reviews",
+            kindResult
+          );
+        }
+        if (summary) printAISummary(summary);
+      }
       return;
     }
 
