@@ -99,7 +99,7 @@ Set `GITHUB_TOKEN` for higher rate limits.
 
 ### GitHub Action
 
-- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.7.0`  
+- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.8.1`  
   Publish steps: [`docs/github-marketplace.md`](docs/github-marketplace.md)  
   Example workflow: [`docs/marketplace-workflow-example.yml`](docs/marketplace-workflow-example.yml)
 - In this repo: `.github/workflows/audit.yml`
@@ -112,8 +112,8 @@ Optional npm publish when the `NPM_TOKEN` secret is set.
 
 ```bash
 # After merging to main
-git tag v2.7.0
-git push origin v2.7.0
+git tag v2.8.1
+git push origin v2.8.1
 ```
 
 See [CHANGELOG.md](CHANGELOG.md) · [ROADMAP.md](ROADMAP.md) (125 features, AI/agents-first).
@@ -151,7 +151,7 @@ docs/            Images + GitHub Action template for other repos
 ```bash
 npm login                  # must be felix-ayush (scoped package owner)
 npm whoami                 # expect: felix-ayush
-npm run publish:packages   # publishes @felix-ayush/openhearth@2.6.1
+npm run publish:packages   # publishes @felix-ayush/openhearth@2.8.1
 # with 2FA: npm publish -w @felix-ayush/openhearth --access public --otp=CODE
 ```
 

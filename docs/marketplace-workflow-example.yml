@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run OpenHearth
-        uses: Ayush7614/OpenHearth@v2.7.0
+        uses: Ayush7614/OpenHearth@v2.8.1
         with:
           username: ${{ github.repository_owner }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # month: "2026-07"
-          # version: "2.7.0"
+          # version: "2.8.1"
           ai-summary: true
           ai-tone: neutral
 

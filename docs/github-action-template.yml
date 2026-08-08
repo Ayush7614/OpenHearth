@@ -2,7 +2,7 @@
 #
 # 1. Copy to: .github/workflows/openhearth-audit.yml
 # 2. Or use the Marketplace composite action instead:
-#      uses: Ayush7614/OpenHearth@v2.6.1
+#      uses: Ayush7614/OpenHearth@v2.8.1
 #    See docs/github-marketplace.md
 #
 # Uses the published CLI from npm.
