@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/images/openhearth-wordmark.svg" alt="OpenHearth — audit the contributions GitHub hides" width="830" />
+  <img src="docs/images/openhearth-wordmark.png" alt="OpenHearth — audit the contributions GitHub hides" width="830" />
 </div>
 
 <br />
