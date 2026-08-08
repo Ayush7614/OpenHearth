@@ -1,6 +1,6 @@
 {
   "name": "@felix-ayush/openhearth",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "CLI to audit every GitHub PR, issue, and review — find repos hidden from your activity feed (\"N repositories not shown\")",
   "type": "module",
   "bin": {
@@ -14,7 +14,8 @@
     "build": "node build.mjs",
     "dev": "node build.mjs && node dist/cli.js",
     "start": "node dist/cli.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "npx tsc test/*.test.mjs --outDir test/dist --module es2022 --moduleResolution bundler --target es2022 --skipLibCheck --allowJs && node --test test/dist/test/*.test.mjs && rm -rf test/dist"
   },
   "keywords": [
     "github",

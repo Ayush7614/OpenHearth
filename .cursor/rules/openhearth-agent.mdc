@@ -1,0 +1,23 @@
+---
+description: OpenHearth agent skill pack for Cursor/Copilot
+globs: ["**/*.{ts,js,mjs,json,md}"]
+---
+
+# OpenHarth Agent Skill
+
+Use OpenHarth CLI/API to audit GitHub contributions, explain hidden repos, compare users, and publish shareable reports.
+
+## Commands
+- `openhearth audit <user> --month YYYY-MM --ai-summary`
+- `openhearth hidden <user> --month YYYY-MM --ai-explain`
+- `openhearth proof <user> --month YYYY-MM --ai-summary`
+- `openhearth overlap <userA> <userB> --month YYYY-MM`
+- `openhearth lens <user> <owner/repo> --year YYYY`
+- `openhearth agent run_audit --username <user> --month YYYY-MM`
+- `openhearth agent ask_summary --username <user> --month YYYY-MM --ai-tone hiring`
+- `openhearth mcp --port 9455`
+
+## Rules
+- Default tone: neutral. Use hiring/technical/exec only when explicitly requested.
+- For gist/webhook writes, require explicit `--approve` or user confirmation.
+- Never expose tokens in logs or summaries.

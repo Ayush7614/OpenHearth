@@ -21,12 +21,12 @@ Docs: https://docs.github.com/en/actions/how-tos/create-and-publish-actions/publ
 3. Click the banner **Draft a release** (or Releases → Draft)  
 4. Check **Publish this Action to the GitHub Marketplace**  
 5. Pick category (e.g. *Utilities* or *Reporting*) + icon/color (already in `action.yml`)  
-6. Tag a release (e.g. `v2.6.1`) and publish  
+6. Tag a release (e.g. `v2.7.0`) and publish  
 
 After that, the repo shows **View on Marketplace**, and others can use:
 
 ```yaml
-- uses: Ayush7614/OpenHearth@v2.6.1
+- uses: Ayush7614/OpenHearth@v2.7.0
   with:
     username: Ayush7614
     month: "2026-07"
@@ -36,6 +36,6 @@ After that, the repo shows **View on Marketplace**, and others can use:
 ## Notes
 
 - Marketplace lists the **Action**, not the workflow template in `docs/github-action-template.yml`.  
-- Pin the Action input `version` to an npm release (default `2.6.1`).  
+- Pin the Action input `version` to an npm release (default `2.7.0`).  
 - GitHub recommends a dedicated action-only repo for the cleanest Marketplace page; a monorepo still works if root `action.yml` exists.  
 - Optional later: split `Ayush7614/openhearth-action` if you want a minimal Marketplace listing separate from the product monorepo.

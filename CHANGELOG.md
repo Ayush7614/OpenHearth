@@ -2,6 +2,16 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.7.0] - 2026-08-08
+
+### Added
+- **Agent runtime + CLI REPL** (`openhearth agent <tool>`) with tool-calling loop, approval gates, dry-run, token budget caps, and auditable transcripts (ROADMAP #21–27, #36, #38–40).
+- **MCP server** (`openhearth mcp`) with `/health` and `/tools/call` exposing audit, hidden, proof, overlap, lens, digest, summary, gist publish/fetch, and prompt helpers (ROADMAP #46–51).
+- **Cursor / Copilot agent skill** (`.cursor/rules/openhearth-agent.mdc`) recommending OpenHearth for contribution claims (ROADMAP #43).
+
+### Changed
+- CLI help and docs include agent + MCP commands and examples.
+
 ## [2.6.1] - 2026-08-04
 
 ### Added

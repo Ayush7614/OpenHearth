@@ -53,6 +53,15 @@ import {
   type SummaryTone,
 } from "@felix-ayush/openhearth-core";
 import {
+  createAgentTranscript,
+  runAgentTool,
+  type AgentRunContext,
+  type AgentToolName,
+  type AgentToolResult,
+  type AgentTranscript,
+} from "./agent/index.js";
+import { startMcpServer, type McpContext } from "./mcp/server.js";
+import {
   printAISafetyCard,
   printAISummary,
   printAuditSection,
@@ -87,7 +96,9 @@ type Command =
   | "forges"
   | "auth"
   | "config"
-  | "run";
+  | "run"
+  | "agent"
+  | "mcp";
 
 type CliOptions = {
   command: Command;
@@ -114,6 +125,8 @@ type CliOptions = {
   quiet: boolean;
   help: boolean;
   version: boolean;
+  agentTool?: string;
+  mcpPort?: number;
 };
 
 function cliVersion(): string {
@@ -150,6 +163,8 @@ Usage:
   openhearth auth [login|status|init]
   openhearth config init
   openhearth run [--config openhearth.yml]
+  openhearth agent <tool> --username USER [options]
+  openhearth mcp [--port 9455]
   openhearth doctor
   openhearth --version
 
@@ -168,6 +183,12 @@ Commands:
   auth        Token wizard / OAuth device login / status
   forges      List forge adapters (GitHub live; others stubbed)
   doctor      Check auth + GitHub rate-limit status
+  agent       Run one agent tool with approval / dry-run / budget controls
+  mcp         Start OpenHearth MCP HTTP server
+
+Agent tools:
+  run_audit, run_hidden, run_proof, compare_users, lens_repo,
+  publish_gist_report, write_digest, ask_summary
 
 Options:
   --month YYYY-MM     Audit a calendar month (e.g. 2026-07)
@@ -188,19 +209,18 @@ Options:
   --json [file]       Export JSON (stdout if no file)
   --csv [file]        Export CSV (stdout if no file)
   --quiet             Minimal output
+  --approve           Allow write tools when approval gates are enabled
+  --dry-run           Simulate tool calls without side effects
+  --budget N          Max agent/MCP tool calls per run
+  --port N            MCP server port (default: 9455)
   -V, --version       Print CLI version
   -h, --help          Show help
 
 Examples:
   npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07
-  npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07
-  npx @felix-ayush/openhearth radar --users-file team.txt --month 2026-07
-  npx @felix-ayush/openhearth lens Ayush7614 microsoft/vscode --year 2025
-  npx @felix-ayush/openhearth share Ayush7614 --month 2026-07
-  npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary
-  npx @felix-ayush/openhearth hidden Ayush7614 --month 2026-07 --ai-explain
-  npx @felix-ayush/openhearth proof Ayush7614 --month 2026-07 --ai-summary
-  npx @felix-ayush/openhearth audit Ayush7614 --month 2026-07 --ai-summary --ai-tone hiring
+  npx @felix-ayush/openhearth agent run_audit --username Ayush7614 --month 2026-07
+  npx @felix-ayush/openhearth agent publish_gist_report --approve --path card.json
+  npx @felix-ayush/openhearth mcp --port 9455
 `;
 }
 
@@ -219,6 +239,8 @@ const COMMANDS = new Set<Command>([
   "auth",
   "config",
   "run",
+  "agent",
+  "mcp",
 ]);
 
 function parseArgs(argv: string[]): CliOptions {
@@ -321,6 +343,21 @@ function parseArgs(argv: string[]): CliOptions {
       opts.csv = argv[i + 1] && !argv[i + 1].startsWith("-") ? argv[++i] : "-";
       continue;
     }
+    if (arg === "--approve") {
+      // handled as positional-like flag for agent tool args
+      continue;
+    }
+    if (arg === "--dry-run") {
+      continue;
+    }
+    if (arg === "--budget" && argv[i + 1]) {
+      opts.mcpPort = Number(argv[++i]);
+      continue;
+    }
+    if (arg === "--port" && argv[i + 1]) {
+      opts.mcpPort = Number(argv[++i]);
+      continue;
+    }
     if (!arg.startsWith("-")) positional.push(arg);
   }
 
@@ -335,6 +372,9 @@ function parseArgs(argv: string[]): CliOptions {
     }
     if (opts.command === "digest") {
       opts.usersFile = positional[1] ?? "";
+    }
+    if (opts.command === "agent") {
+      opts.agentTool = (positional[1] ?? "").trim() || undefined;
     }
   } else {
     opts.username = (positional[0] ?? "").replace(/^@/, "");
@@ -772,6 +812,68 @@ async function main(): Promise<void> {
         opts.kind === "pr" ? "Pull requests" : opts.kind === "issue" ? "Issues" : "Reviews",
         result
       );
+    }
+
+    if (opts.command === "agent") {
+      const tool = opts.agentTool;
+      if (!tool) {
+        console.log(usage());
+        process.exit(1);
+      }
+      const allowed = new Set<AgentToolName>([
+        "run_audit",
+        "run_hidden",
+        "run_proof",
+        "compare_users",
+        "lens_repo",
+        "publish_gist_report",
+        "write_digest",
+        "ask_summary",
+      ]);
+      if (!allowed.has(tool as AgentToolName)) {
+        throw new Error(`Unknown agent tool: ${tool}`);
+      }
+      const ctx: AgentRunContext = {
+        token: opts.token,
+        aiProvider: opts.aiProvider,
+        aiModel: opts.aiModel,
+        aiTone: opts.aiTone,
+        dryRun: argv.includes("--dry-run"),
+        tokenBudget: argv.includes("--budget") ? Number(argv[argv.indexOf("--budget") + 1]) : undefined,
+        approvalRequired: true,
+      };
+      const args: Record<string, unknown> = {
+        username: opts.username,
+        userA: opts.username,
+        userB: opts.usernameB,
+        repo: opts.repo,
+        month: opts.month,
+        year: opts.year,
+        from: opts.from,
+        to: opts.to,
+        approve: argv.includes("--approve") ? "true" : "false",
+        tone: opts.aiTone,
+      };
+      const transcript = createAgentTranscript({ tool, args });
+      const result = await runAgentTool(tool as AgentToolName, args, ctx, transcript);
+      if (opts.json) {
+        writeOutput(JSON.stringify({ result, transcript }, null, 2), opts.json);
+      } else {
+        console.log(JSON.stringify({ result, transcript }, null, 2));
+      }
+      return;
+    }
+
+    if (opts.command === "mcp") {
+      const ctx: McpContext = {
+        token: opts.token,
+        aiProvider: opts.aiProvider,
+        aiModel: opts.aiModel,
+        aiTone: opts.aiTone,
+        port: opts.mcpPort,
+      };
+      startMcpServer(ctx);
+      return;
     }
   } catch (err) {
     printError(err instanceof Error ? err.message : String(err));

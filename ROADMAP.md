@@ -2,7 +2,7 @@
 
 **Product north star:** Make every GitHub contribution visible — then make it *understandable* with AI agents that audit, explain, compare, and act.
 
-**Current release:** `2.6.1` (hidden-repo explainer + proof narration + Marketplace AI inputs)  
+**Current release:** `2.7.0` (Agent + MCP)  
 **This document:** full-fledged roadmap (**125 features**) with a heavy **LLM / AI / Agents** track.
 
 Status legend:
@@ -59,13 +59,13 @@ Priority: `P0` must-have · `P1` strong · `P2` stretch · `P3` explore
 
 | # | Feature | Priority | Status | Notes |
 | --- | --- | --- | --- | --- |
-| 21 | **`openhearth agent`** interactive REPL | P0 | next | Tool-calling loop |
-| 22 | Agent tool: `run_audit` | P0 | next | |
-| 23 | Agent tool: `run_hidden` / `run_proof` | P0 | next | |
-| 24 | Agent tool: `compare_users` / `overlap` | P0 | next | |
-| 25 | Agent tool: `lens_repo` | P1 | next | |
-| 26 | Agent tool: `publish_gist_report` | P1 | next | |
-| 27 | Agent tool: `write_digest` + webhook post | P1 | planned | |
+| 21 | **`openhearth agent`** interactive REPL | P0 | shipped | Tool-calling loop |
+| 22 | Agent tool: `run_audit` | P0 | shipped | |
+| 23 | Agent tool: `run_hidden` / `run_proof` | P0 | shipped | |
+| 24 | Agent tool: `compare_users` / `overlap` | P0 | shipped | |
+| 25 | Agent tool: `lens_repo` | P1 | shipped | |
+| 26 | Agent tool: `publish_gist_report` | P1 | shipped | |
+| 27 | Agent tool: `write_digest` + webhook post | P1 | shipped | |
 | 28 | Agent tool: `import_json` / `save_workspace` | P1 | planned | Browser bridge |
 | 29 | **Planner agent** — multi-step monthly ritual | P0 | planned | Schedule + checklist |
 | 30 | **Watcher agent** — alert on hidden-repo spike | P0 | planned | Drift from #19 backlog |
@@ -74,14 +74,14 @@ Priority: `P0` must-have · `P1` strong · `P2` stretch · `P3` explore
 | 33 | **PR comment agent** — first-time contributor context | P1 | planned | GitHub App |
 | 34 | **Issue triage agent** (optional) using contrib graph | P2 | horizon | |
 | 35 | **Multi-agent debate** (skeptic vs advocate on impact) | P2 | horizon | Fun / research |
-| 36 | **Human approval gates** before any write/post | P0 | next | Default deny writes |
+| 36 | **Human approval gates** before any write/post | P0 | shipped | Default deny writes |
 | 37 | **Agent memory** per workspace (local vector store) | P1 | planned | |
-| 38 | **Agent run logs** (auditable transcript) | P0 | next | |
-| 39 | **Cost / token budget caps** | P0 | next | |
-| 40 | **Dry-run mode** for agents | P0 | next | |
+| 38 | **Agent run logs** (auditable transcript) | P0 | shipped | |
+| 39 | **Cost / token budget caps** | P0 | shipped | |
+| 40 | **Dry-run mode** for agents | P0 | shipped | |
 | 41 | **Cron agent** via Action + model | P1 | planned | |
 | 42 | **Slack/Discord agent bot** (`/hearth @user July`) | P1 | planned | |
-| 43 | **Cursor / Copilot agent skill** pack | P0 | next | Ship `.cursor` skill |
+| 43 | **Cursor / Copilot agent skill** pack | P0 | shipped | Ship `.cursor` skill |
 | 44 | **Claude Desktop / ChatGPT Actions** connector | P1 | planned | |
 | 45 | **Swarm mode** — parallel user audits with merge report | P2 | horizon | |
 
@@ -91,12 +91,12 @@ Priority: `P0` must-have · `P1` strong · `P2` stretch · `P3` explore
 
 | # | Feature | Priority | Status | Notes |
 | --- | --- | --- | --- | --- |
-| 46 | **Official OpenHearth MCP server** | P0 | next | stdio + HTTP |
-| 47 | MCP: audit / hidden / proof tools | P0 | next | |
-| 48 | MCP: board compare / overlap | P1 | next | |
+| 46 | **Official OpenHearth MCP server** | P0 | shipped | stdio + HTTP |
+| 47 | MCP: audit / hidden / proof tools | P0 | shipped | |
+| 48 | MCP: board compare / overlap | P1 | shipped | |
 | 49 | MCP: resources for saved runs | P1 | planned | |
-| 50 | MCP: prompts library (summary, hiring, digest) | P1 | next | |
-| 51 | MCP auth via device flow / PAT | P0 | next | |
+| 50 | MCP: prompts library (summary, hiring, digest) | P1 | shipped | |
+| 51 | MCP auth via device flow / PAT | P0 | shipped | |
 | 52 | **Cursor rule** recommending OpenHearth for contrib claims | P1 | next | |
 | 53 | **VS Code extension** thin client | P2 | planned | |
 | 54 | **JetBrains plugin** (horizon) | P3 | horizon | |

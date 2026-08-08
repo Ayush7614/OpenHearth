@@ -79,10 +79,19 @@ Set `GITHUB_TOKEN` for higher rate limits.
 | `--json [file]` | Export JSON |
 | `--csv [file]` | Export CSV |
 | `-V, --version` | Print CLI version |
+| `agent <tool>` | Run one agent tool with approval / dry-run / budget |
+| `mcp [--port N]` | Start OpenHearth MCP HTTP server |
+
+### Agent + MCP (2.7)
+
+- `openhearth agent run_audit --username Ayush7614 --month 2026-07`
+- `openhearth agent ask_summary --username Ayush7614 --month 2026-07 --ai-tone hiring`
+- `openhearth agent publish_gist_report --approve --path card.json`
+- `openhearth mcp --port 9455` exposes `/health`, `/tools/call`
 
 ### GitHub Action
 
-- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.6.1`  
+- **Reusable / Marketplace:** root [`action.yml`](action.yml) — `uses: Ayush7614/OpenHearth@v2.7.0`  
   Publish steps: [`docs/github-marketplace.md`](docs/github-marketplace.md)  
   Example workflow: [`docs/marketplace-workflow-example.yml`](docs/marketplace-workflow-example.yml)
 - In this repo: `.github/workflows/audit.yml`
@@ -95,8 +104,8 @@ Optional npm publish when the `NPM_TOKEN` secret is set.
 
 ```bash
 # After merging to main
-git tag v2.6.1
-git push origin v2.6.1
+git tag v2.7.0
+git push origin v2.7.0
 ```
 
 See [CHANGELOG.md](CHANGELOG.md) · [ROADMAP.md](ROADMAP.md) (125 features, AI/agents-first).
