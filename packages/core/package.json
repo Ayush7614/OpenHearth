@@ -1,6 +1,6 @@
 {
   "name": "@felix-ayush/openhearth-core",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "private": true,
   "description": "Internal audit engine — bundled into @felix-ayush/openhearth (not published).",
   "type": "module",
@@ -21,6 +21,26 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./gist.js": {
+      "types": "./dist/gist.d.ts",
+      "import": "./dist/gist.js"
+    },
+    "./github.js": {
+      "types": "./dist/github.d.ts",
+      "import": "./dist/github.js"
+    },
+    "./aggregate.js": {
+      "types": "./dist/aggregate.d.ts",
+      "import": "./dist/aggregate.js"
+    },
+    "./llm.js": {
+      "types": "./dist/llm.d.ts",
+      "import": "./dist/llm.js"
+    },
+    "./insights.js": {
+      "types": "./dist/insights.d.ts",
+      "import": "./dist/insights.js"
     }
   },
   "files": [

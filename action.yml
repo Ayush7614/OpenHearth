@@ -21,7 +21,7 @@ inputs:
   version:
     description: npm dist-tag or version of @felix-ayush/openhearth to run
     required: false
-    default: "2.6.1"
+    default: "2.7.0"
   working-directory:
     description: Directory for JSON/CSV outputs
     required: false
