@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 220" role="img" aria-label="OpenHearth  audit the contributions GitHub hides">
+  <defs>
+    <linearGradient id="ember" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff7a59"/>
+      <stop offset="45%" stop-color="#e8a65d"/>
+      <stop offset="100%" stop-color="#f0d78c"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#2a2118"/>
+      <stop offset="100%" stop-color="#161311"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Card so the mark stays readable on GitHub light + dark themes -->
+  <rect width="830" height="220" rx="28" fill="url(#glow)"/>
+  <rect x="1.5" y="1.5" width="827" height="217" rx="26.5" fill="none" stroke="rgba(232,166,93,0.22)" stroke-width="1.5"/>
+
+  <!-- Soft hearth glow -->
+  <ellipse cx="415" cy="118" rx="280" ry="48" fill="#e8a65d" opacity="0.08"/>
+
+  <text
+    x="415"
+    y="118"
+    text-anchor="middle"
+    font-family="ui-rounded, 'SF Pro Rounded', 'Segoe UI', system-ui, -apple-system, sans-serif"
+    font-size="72"
+    font-weight="700"
+    letter-spacing="-1.5"
+    fill="url(#ember)"
+  >OpenHearth</text>
+
+  <text
+    x="415"
+    y="162"
+    text-anchor="middle"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    font-size="16"
+    fill="#a89f94"
+  >Audit the contributions GitHub hides</text>
+</svg>
