@@ -9,6 +9,25 @@
 
 **Website:** [ayush7614.github.io/OpenHearth](https://ayush7614.github.io/OpenHearth/) · **npm:** [`@felix-ayush/openhearth`](https://www.npmjs.com/package/@felix-ayush/openhearth)
 
+### ASCII banner
+
+Running any OpenHearth command prints this colorful banner first (run `openhearth --help` to see):
+
+```text
+   ____                    _____                _   _
+  / __ \                  |  __ \              | | | |
+ | |  | |_ __   ___ _ __  | |__) |___ _ __ ___ | |_| |
+ | |  | | '_ \ / _ \ '_ \ |  ___/ _ \ '__/ _ \| __| |
+ | |__| | |_) |  __/ | | || |  |  __/ | | (_) | |_| |
+  \____/| .__/ \___|_| |_||_|   \___|_|  \___/ \__|_|
+        | |
+        |_|
+```
+
+`welcome to OpenHearth v2.8.x · 🔥 Audit the contributions GitHub hides — PRs, issues & reviews beyond the feed.`
+
+In the terminal the `OpenHearth` logo renders as an animated rainbow gradient with ANSI colors.
+
 <p align="center">
   <img src="docs/images/landing.jpg" alt="OpenHearth landing page — docs and workspaces" width="900" />
 </p>
