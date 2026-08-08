@@ -5,7 +5,7 @@ All notable changes to OpenHearth are documented here.
 ## [2.8.0] - 2026-08-08
 
 ### Added
-- **ASCII CLI banner + welcome line.** Every `openhearth` command now prints a colorful rainbow-gradient "OpenHearth" ASCII logo and a welcome line (`welcome to OpenHearth v2.8.0 · 🔥 Audit the contributions GitHub hides…`) before producing output. Added `--quiet` / `--json` / `--csv` suppress the banner so scripts stay parseable. The same banner art is shown in the README.
+- **ASCII CLI banner + welcome line.** Every `openhearth` command now prints a colorful rainbow-gradient "OpenHearth" ASCII logo and a welcome line before producing output. `--quiet` / `--json` / `--csv` suppress the banner so scripts stay parseable. New `packages/cli/src/banner.ts` module (`renderBanner(version)`, `plainBanner()`); the logo is shown colorfully as a rainbow SVG in the README and as a plain-ASCII banner in the npm package README.
 
 ## [2.7.1] - 2026-08-08
 

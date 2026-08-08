@@ -1,5 +1,17 @@
 # OpenHearth
 
+```
+   ____                    _____                _   _
+  / __ \                  |  __ \              | | | |
+ | |  | |_ __   ___ _ __  | |__) |___ _ __ ___ | |_| |
+ | |  | | '_ \ / _ \ '_ \ |  ___/ _ \ '__/ _ \| __| |
+ | |__| | |_) |  __/ | | || |  |  __/ | | (_) | |_| |
+  \____/| .__/ \___|_| |_||_|   \___|_|  \___/ \__|_|
+        | |
+        |_|
+  welcome to OpenHearth · 🔥 Audit the contributions GitHub hides.
+```
+
 **Find every GitHub contribution your profile activity feed hides.**
 
 OpenHearth is a CLI that audits pull requests, issues, and reviews via the GitHub Search API — then reports what GitHub’s truncated activity sidebar doesn’t show (“51 repositories not shown”).

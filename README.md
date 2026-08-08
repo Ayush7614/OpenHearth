@@ -11,22 +11,17 @@
 
 ### ASCII banner
 
-Running any OpenHearth command prints this colorful banner first (run `openhearth --help` to see):
+Running any OpenHearth command prints this colorful rainbow banner first (and a welcome line). In the terminal the `OpenHearth` logo renders as an animated **ANSI rainbow gradient**; here it is rendered as a crisp SVG:
 
-```text
-   ____                    _____                _   _
-  / __ \                  |  __ \              | | | |
- | |  | |_ __   ___ _ __  | |__) |___ _ __ ___ | |_| |
- | |  | | '_ \ / _ \ '_ \ |  ___/ _ \ '__/ _ \| __| |
- | |__| | |_) |  __/ | | || |  |  __/ | | (_) | |_| |
-  \____/| .__/ \___|_| |_||_|   \___|_|  \___/ \__|_|
-        | |
-        |_|
+<p align="center">
+  <img src="docs/images/openhearth-banner.svg" alt="OpenHearth ASCII banner — rainbow gradient" width="560" />
+</p>
+
+```
+welcome to OpenHearth v2.8.x · 🔥 Audit the contributions GitHub hides — PRs, issues & reviews beyond the feed.
 ```
 
-`welcome to OpenHearth v2.8.x · 🔥 Audit the contributions GitHub hides — PRs, issues & reviews beyond the feed.`
-
-In the terminal the `OpenHearth` logo renders as an animated rainbow gradient with ANSI colors.
+Use `--quiet`, `--json`, or `--csv` to suppress the banner when parsing output in scripts.
 
 <p align="center">
   <img src="docs/images/landing.jpg" alt="OpenHearth landing page — docs and workspaces" width="900" />
