@@ -2,6 +2,17 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.8.2] - 2026-08-08
+
+### Changed
+- CLI ASCII banner is now **ALL-CAPS `OPENHEARTH`** in a **red** terminal palette (OpenClaude-style energy, red instead of orange).
+- CLI human-facing labels/messages print in **UPPERCASE**; repo names and usernames stay as returned by GitHub.
+- README / npm hero banner updated to the red ALL-CAPS mark; removed landing screenshot grid from README.
+- Site landing: removed the “What it looks like” terminal mockup section.
+
+### Fixed
+- Align Action / docs / ROADMAP / package versions to **2.8.2**.
+
 ## [2.8.1] - 2026-08-08
 
 ### Added

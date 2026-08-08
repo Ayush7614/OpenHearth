@@ -48,7 +48,6 @@ export function renderSite(root: HTMLElement): void {
           <a href="#/app" class="nav-link">Workspaces</a>
           <a href="#/app/board" class="nav-link">Board</a>
           <a href="#install" class="nav-link">Install</a>
-          <a href="#demo" class="nav-link">Demo</a>
           <a href="#features" class="nav-link">Features</a>
           <a href="https://www.npmjs.com/package/@felix-ayush/openhearth" target="_blank" rel="noopener" class="nav-link">npm</a>
           <a href="https://github.com/Ayush7614/OpenHearth" target="_blank" rel="noopener" class="nav-link">GitHub</a>
@@ -69,36 +68,6 @@ export function renderSite(root: HTMLElement): void {
         </div>
       </div>
     </header>
-
-    <section class="section" id="demo">
-      <div class="shell">
-        <h2>What it looks like</h2>
-        <p class="muted">Sample terminal output from a monthly audit.</p>
-        <div class="terminal" role="img" aria-label="Sample OpenHearth CLI output">
-          <div class="terminal-chrome">
-            <span></span><span></span><span></span>
-            <em>openhearth · audit</em>
-          </div>
-          <pre class="terminal-body"><code><span class="t-dim">$</span> npx @felix-ayush/openhearth hidden USER --month 2026-07
-
-<span class="t-bold">OpenHearth</span> <span class="t-dim">· contribution audit</span>
-
-<span class="t-bold">Summary</span> <span class="t-dim">· @USER · 2026-07</span>
-Total contributions   <span class="t-bold">494</span>
-Unique repositories   <span class="t-bold">78</span>
-PR merge rate         <span class="t-bold">51%</span>
-
-<span class="t-warn">⚠ Hidden by activity feed</span>
-Feed shows ~25 busiest repos; Search API found 78.
-~53 lower-activity repositories are likely truncated.
-
-<span class="t-bold">Likely hidden repositories</span> <span class="t-dim">· least activity first</span>
-· small-org/side-project 1
-· another/low-activity 2
-· … and 51 more</code></pre>
-        </div>
-      </div>
-    </section>
 
     <section class="section problem">
       <div class="shell">

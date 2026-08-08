@@ -1,34 +1,32 @@
-// OpenHearth ASCII-art CLI banner (figlet "big" — spells OpenHearth correctly).
+// OpenHearth ASCII-art CLI banner — ALL CAPS wordmark, red terminal palette.
 
 const RESET = "\x1b[0m";
 const BOLD = "\x1b[1m";
 
-// Warm hearth gradient (ember → gold → soft violet).
+// Red-only gradient (OpenClaude is orange; OpenHearth is red).
 const GRADIENT = [
-  "\x1b[38;5;203m", // ember
-  "\x1b[38;5;209m", // coral
-  "\x1b[38;5;214m", // orange
-  "\x1b[38;5;220m", // gold
-  "\x1b[38;5;229m", // pale gold
-  "\x1b[38;5;180m", // sand
-  "\x1b[38;5;173m", // clay
-  "\x1b[38;5;168m", // rose
+  "\x1b[38;5;196m", // bright red
+  "\x1b[38;5;160m", // strong red
+  "\x1b[38;5;124m", // deep red
+  "\x1b[38;5;197m", // rose red
+  "\x1b[38;5;203m", // light crimson
+  "\x1b[38;5;167m", // soft red
+  "\x1b[38;5;88m",  // dark red
+  "\x1b[38;5;9m",   // classic ANSI red
 ];
 
-/** Correct "OpenHearth" wordmark — figlet -f big (not the previous mangled mashup). */
+/** ALL-CAPS "OPENHEARTH" wordmark — figlet -f big. */
 export const ASCII_LOGO = [
-  "  ____                   _    _                 _   _",
-  " / __ \\                 | |  | |               | | | |",
-  "| |  | |_ __   ___ _ __ | |__| | ___  __ _ _ __| |_| |__",
-  "| |  | | '_ \\ / _ \\ '_ \\|  __  |/ _ \\/ _` | '__| __| '_ \\",
-  "| |__| | |_) |  __/ | | | |  | |  __/ (_| | |  | |_| | | |",
-  " \\____/| .__/ \\___|_| |_|_|  |_|\\___|\\__,_|_|   \\__|_| |_|",
-  "       | |",
-  "       |_|",
+  "  ____  _____  ______ _   _ _    _ ______          _____ _______ _    _",
+  " / __ \\|  __ \\|  ____| \\ | | |  | |  ____|   /\\   |  __ \\__   __| |  | |",
+  "| |  | | |__) | |__  |  \\| | |__| | |__     /  \\  | |__) | | |  | |__| |",
+  "| |  | |  ___/|  __| | . ` |  __  |  __|   / /\\ \\ |  _  /  | |  |  __  |",
+  "| |__| | |    | |____| |\\  | |  | | |____ / ____ \\| | \\ \\  | |  | |  | |",
+  " \\____/|_|    |______|_| \\_|_|  |_|______/_/    \\_\\_|  \\_\\ |_|  |_|  |_|",
 ];
 
 const WELCOME =
-  "🔥 Audit the contributions GitHub hides — PRs, issues & reviews beyond the feed.";
+  "🔥 AUDIT THE CONTRIBUTIONS GITHUB HIDES — PRS, ISSUES & REVIEWS BEYOND THE FEED.";
 
 function colorLine(line: string): string {
   let out = "";
@@ -45,8 +43,8 @@ function colorLine(line: string): string {
 }
 
 export function bannerVersion(version?: string): string {
-  const v = version ? version : "2.8.1";
-  return `${BOLD}welcome to OpenHearth v${v}${RESET}  ·  ${WELCOME}`;
+  const v = version ? version : "2.8.2";
+  return `${BOLD}WELCOME TO OPENHEARTH V${v.toUpperCase()}${RESET}  ·  ${WELCOME}`;
 }
 
 export function renderBanner(version?: string): string {
