@@ -1,15 +1,8 @@
 # OpenHearth
 
-```
-  ____                   _    _                 _   _
- / __ \                 | |  | |               | | | |
-| |  | |_ __   ___ _ __ | |__| | ___  __ _ _ __| |_| |__
-| |  | | '_ \ / _ \ '_ \|  __  |/ _ \/ _` | '__| __| '_ \
-| |__| | |_) |  __/ | | | |  | |  __/ (_| | |  | |_| | | |
- \____/| .__/ \___|_| |_|_|  |_|\___|\__,_|_|   \__|_| |_|
-       | |
-       |_|
-```
+<p align="center">
+  <img src="banner.png" alt="OpenHearth colorful CLI ASCII banner" width="720" />
+</p>
 
 **Find every GitHub contribution your profile activity feed hides.**
 

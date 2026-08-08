@@ -8,7 +8,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "banner.png"
   ],
   "scripts": {
     "build": "node build.mjs",

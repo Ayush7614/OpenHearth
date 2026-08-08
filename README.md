@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/images/openhearth-wordmark.png" alt="OpenHearth — audit the contributions GitHub hides" width="830" />
+  <img src="docs/images/openhearth-cli-banner.png" alt="OpenHearth colorful CLI ASCII banner" width="830" />
 </div>
 
 <br />

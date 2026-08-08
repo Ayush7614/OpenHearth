@@ -9,7 +9,8 @@ All notable changes to OpenHearth are documented here.
 - README opens with a centered **PNG** wordmark (GitHub does not reliably render SVG in README `<img>` tags) and drops the extra “ASCII banner” explainer section.
 
 ### Changed
-- README hero wordmark restyled to OpenClaude-like **pixel / 3D extruded** letters with a full **rainbow** face gradient.
+- README hero uses the **colorful CLI ASCII banner** screenshot (`docs/images/openhearth-cli-banner.png`).
+- npm package README ships the same banner image (`banner.png`) so it renders on npmjs.com.
 
 ## [2.8.0] - 2026-08-08
 
