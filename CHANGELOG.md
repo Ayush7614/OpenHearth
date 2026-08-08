@@ -2,15 +2,15 @@
 
 All notable changes to OpenHearth are documented here.
 
-## [Unreleased]
+## [2.8.1] - 2026-08-08
+
+### Added
+- Colorful CLI ASCII banner image on GitHub README (`docs/images/openhearth-cli-banner.png`) and in the npm package (`banner.png`) so npmjs.com can render it.
 
 ### Fixed
-- CLI ASCII banner now uses a correct figlet `big` **OpenHearth** wordmark (previous mashup misread as garbage letters).
-- README opens with a centered **PNG** wordmark (GitHub does not reliably render SVG in README `<img>` tags) and drops the extra “ASCII banner” explainer section.
-
-### Changed
-- README hero uses the **colorful CLI ASCII banner** screenshot (`docs/images/openhearth-cli-banner.png`).
-- npm package README ships the same banner image (`banner.png`) so it renders on npmjs.com.
+- CLI ASCII banner uses a correct figlet `big` **OpenHearth** wordmark (previous mashup misread as garbage letters).
+- Align **Action / docs / ROADMAP / README** pins to **2.8.1** (were still on 2.7.0 / older).
+- Root workspace dep on `@felix-ayush/openhearth` linked as `*` (was stale `^2.7.0`).
 
 ## [2.8.0] - 2026-08-08
 

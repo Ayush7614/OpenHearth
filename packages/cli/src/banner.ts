@@ -45,7 +45,7 @@ function colorLine(line: string): string {
 }
 
 export function bannerVersion(version?: string): string {
-  const v = version ? version : "2.8.x";
+  const v = version ? version : "2.8.1";
   return `${BOLD}welcome to OpenHearth v${v}${RESET}  ·  ${WELCOME}`;
 }
 

@@ -2,7 +2,7 @@
 
 **Product north star:** Make every GitHub contribution visible — then make it *understandable* with AI agents that audit, explain, compare, and act.
 
-**Current release:** `2.7.0` (Agent + MCP)  
+**Current release:** `2.8.1` (CLI ASCII banner + README/npm banner image + Agent/MCP)  
 **This document:** full-fledged roadmap (**125 features**) with a heavy **LLM / AI / Agents** track.
 
 Status legend:
