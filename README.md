@@ -1,4 +1,10 @@
-# OpenHearth
+<div align="center">
+  <img src="docs/images/openhearth-wordmark.svg" alt="OpenHearth — audit the contributions GitHub hides" width="830" />
+</div>
+
+<br />
+
+<div align="center">
 
 [![npm version](https://img.shields.io/npm/v/@felix-ayush/openhearth.svg?color=c48442&label=npm)](https://www.npmjs.com/package/@felix-ayush/openhearth)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -9,19 +15,7 @@
 
 **Website:** [ayush7614.github.io/OpenHearth](https://ayush7614.github.io/OpenHearth/) · **npm:** [`@felix-ayush/openhearth`](https://www.npmjs.com/package/@felix-ayush/openhearth)
 
-### ASCII banner
-
-Running any OpenHearth command prints this colorful rainbow banner first (and a welcome line). In the terminal the `OpenHearth` logo renders as an animated **ANSI rainbow gradient**; here it is rendered as a crisp SVG:
-
-<p align="center">
-  <img src="docs/images/openhearth-banner.svg" alt="OpenHearth ASCII banner — rainbow gradient" width="560" />
-</p>
-
-```
-welcome to OpenHearth v2.8.x · 🔥 Audit the contributions GitHub hides — PRs, issues & reviews beyond the feed.
-```
-
-Use `--quiet`, `--json`, or `--csv` to suppress the banner when parsing output in scripts.
+</div>
 
 <p align="center">
   <img src="docs/images/landing.jpg" alt="OpenHearth landing page — docs and workspaces" width="900" />
