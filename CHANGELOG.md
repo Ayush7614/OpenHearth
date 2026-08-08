@@ -2,6 +2,12 @@
 
 All notable changes to OpenHearth are documented here.
 
+## [2.7.1] - 2026-08-08
+
+### Fixed
+- `openhearth agent` and `openhearth mcp` no longer fall through to the audit command path — they now short-circuit correctly (approval gates, dry-run, budget, and transcript work as documented).
+- `--username` / `-u` / `--user-a` / `--user-b` flags are now parsed, so `openhearth agent <tool> --username USER` passes the username to the tool.
+
 ## [2.7.0] - 2026-08-08
 
 ### Added

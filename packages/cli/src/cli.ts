@@ -275,6 +275,18 @@ function parseArgs(argv: string[]): CliOptions {
       opts.quiet = true;
       continue;
     }
+    if ((arg === "--username" || arg === "-u") && argv[i + 1]) {
+      opts.username = argv[++i].replace(/^@/, "");
+      continue;
+    }
+    if (arg === "--user-a" && argv[i + 1]) {
+      opts.username = argv[++i].replace(/^@/, "");
+      continue;
+    }
+    if (arg === "--user-b" && argv[i + 1]) {
+      opts.usernameB = argv[++i].replace(/^@/, "");
+      continue;
+    }
     if (arg === "--month" && argv[i + 1]) {
       opts.month = argv[++i];
       continue;
@@ -363,18 +375,20 @@ function parseArgs(argv: string[]): CliOptions {
 
   if (positional[0] && COMMANDS.has(positional[0] as Command)) {
     opts.command = positional[0] as Command;
-    opts.username = (positional[1] ?? "").replace(/^@/, "");
-    if (opts.command === "overlap") {
-      opts.usernameB = (positional[2] ?? "").replace(/^@/, "");
-    }
-    if (opts.command === "lens") {
-      opts.repo = positional[2] ?? "";
-    }
-    if (opts.command === "digest") {
-      opts.usersFile = positional[1] ?? "";
-    }
     if (opts.command === "agent") {
+      // openhearth agent <tool> --username USER
       opts.agentTool = (positional[1] ?? "").trim() || undefined;
+    } else {
+      opts.username = (positional[1] ?? "").replace(/^@/, "");
+      if (opts.command === "overlap") {
+        opts.usernameB = (positional[2] ?? "").replace(/^@/, "");
+      }
+      if (opts.command === "lens") {
+        opts.repo = positional[2] ?? "";
+      }
+      if (opts.command === "digest") {
+        opts.usersFile = positional[1] ?? "";
+      }
     }
   } else {
     opts.username = (positional[0] ?? "").replace(/^@/, "");
@@ -494,6 +508,69 @@ async function main(): Promise<void> {
   if (opts.token) setAuthToken(opts.token);
 
   try {
+    if (opts.command === "agent") {
+      const tool = opts.agentTool;
+      if (!tool) {
+        console.log(usage());
+        process.exit(1);
+      }
+      const allowed = new Set<AgentToolName>([
+        "run_audit",
+        "run_hidden",
+        "run_proof",
+        "compare_users",
+        "lens_repo",
+        "publish_gist_report",
+        "write_digest",
+        "ask_summary",
+      ]);
+      if (!allowed.has(tool as AgentToolName)) {
+        throw new Error(`Unknown agent tool: ${tool}`);
+      }
+      const argv = process.argv.slice(2);
+      const ctx: AgentRunContext = {
+        token: opts.token,
+        aiProvider: opts.aiProvider,
+        aiModel: opts.aiModel,
+        aiTone: opts.aiTone,
+        dryRun: argv.includes("--dry-run"),
+        tokenBudget: argv.includes("--budget") ? Number(argv[argv.indexOf("--budget") + 1]) : undefined,
+        approvalRequired: true,
+      };
+      const args: Record<string, unknown> = {
+        username: opts.username,
+        userA: opts.username,
+        userB: opts.usernameB,
+        repo: opts.repo,
+        month: opts.month,
+        year: opts.year,
+        from: opts.from,
+        to: opts.to,
+        approve: argv.includes("--approve") ? "true" : "false",
+        tone: opts.aiTone,
+      };
+      const transcript = createAgentTranscript({ tool, args });
+      const result = await runAgentTool(tool as AgentToolName, args, ctx, transcript);
+      if (opts.json) {
+        writeOutput(JSON.stringify({ result, transcript }, null, 2), opts.json);
+      } else {
+        console.log(JSON.stringify({ result, transcript }, null, 2));
+      }
+      return;
+    }
+
+    if (opts.command === "mcp") {
+      const ctx: McpContext = {
+        token: opts.token,
+        aiProvider: opts.aiProvider,
+        aiModel: opts.aiModel,
+        aiTone: opts.aiTone,
+        port: opts.mcpPort,
+      };
+      startMcpServer(ctx);
+      return;
+    }
+
     if (opts.command === "forges") {
       console.log("");
       console.log(`  ${githubForge.label.padEnd(12)} ${githubForge.supported ? "live" : "stub"}`);
@@ -812,68 +889,6 @@ async function main(): Promise<void> {
         opts.kind === "pr" ? "Pull requests" : opts.kind === "issue" ? "Issues" : "Reviews",
         result
       );
-    }
-
-    if (opts.command === "agent") {
-      const tool = opts.agentTool;
-      if (!tool) {
-        console.log(usage());
-        process.exit(1);
-      }
-      const allowed = new Set<AgentToolName>([
-        "run_audit",
-        "run_hidden",
-        "run_proof",
-        "compare_users",
-        "lens_repo",
-        "publish_gist_report",
-        "write_digest",
-        "ask_summary",
-      ]);
-      if (!allowed.has(tool as AgentToolName)) {
-        throw new Error(`Unknown agent tool: ${tool}`);
-      }
-      const ctx: AgentRunContext = {
-        token: opts.token,
-        aiProvider: opts.aiProvider,
-        aiModel: opts.aiModel,
-        aiTone: opts.aiTone,
-        dryRun: argv.includes("--dry-run"),
-        tokenBudget: argv.includes("--budget") ? Number(argv[argv.indexOf("--budget") + 1]) : undefined,
-        approvalRequired: true,
-      };
-      const args: Record<string, unknown> = {
-        username: opts.username,
-        userA: opts.username,
-        userB: opts.usernameB,
-        repo: opts.repo,
-        month: opts.month,
-        year: opts.year,
-        from: opts.from,
-        to: opts.to,
-        approve: argv.includes("--approve") ? "true" : "false",
-        tone: opts.aiTone,
-      };
-      const transcript = createAgentTranscript({ tool, args });
-      const result = await runAgentTool(tool as AgentToolName, args, ctx, transcript);
-      if (opts.json) {
-        writeOutput(JSON.stringify({ result, transcript }, null, 2), opts.json);
-      } else {
-        console.log(JSON.stringify({ result, transcript }, null, 2));
-      }
-      return;
-    }
-
-    if (opts.command === "mcp") {
-      const ctx: McpContext = {
-        token: opts.token,
-        aiProvider: opts.aiProvider,
-        aiModel: opts.aiModel,
-        aiTone: opts.aiTone,
-        port: opts.mcpPort,
-      };
-      startMcpServer(ctx);
-      return;
     }
   } catch (err) {
     printError(err instanceof Error ? err.message : String(err));

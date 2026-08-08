@@ -1,7 +1,7 @@
 {
   "name": "openhearth-monorepo",
   "private": true,
-  "version": "2.7.0",
+  "version": "2.7.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/Ayush7614/OpenHearth.git"
@@ -23,5 +23,8 @@
   },
   "devDependencies": {
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@felix-ayush/openhearth": "^2.7.0"
   }
 }
