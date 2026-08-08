@@ -1,7 +1,7 @@
 # OpenHearth
 
 <p align="center">
-  <img src="banner.png" alt="OpenHearth colorful CLI ASCII banner" width="720" />
+  <img src="banner.png" alt="OPENHEARTH red CLI ASCII banner" width="720" />
 </p>
 
 **Find every GitHub contribution your profile activity feed hides.**
