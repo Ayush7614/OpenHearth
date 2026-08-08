@@ -8,6 +8,9 @@ All notable changes to OpenHearth are documented here.
 - CLI ASCII banner now uses a correct figlet `big` **OpenHearth** wordmark (previous mashup misread as garbage letters).
 - README opens with a centered **PNG** wordmark (GitHub does not reliably render SVG in README `<img>` tags) and drops the extra “ASCII banner” explainer section.
 
+### Changed
+- README hero wordmark restyled to OpenClaude-like **pixel / 3D extruded** letters with a full **rainbow** face gradient.
+
 ## [2.8.0] - 2026-08-08
 
 ### Added
