@@ -508,6 +508,9 @@ async function main(): Promise<void> {
   if (opts.token) setAuthToken(opts.token);
 
   try {
+    if (!opts.quiet && !opts.json && !opts.csv) {
+      printBanner(cliVersion());
+    }
     if (opts.command === "agent") {
       const tool = opts.agentTool;
       if (!tool) {
@@ -593,14 +596,12 @@ async function main(): Promise<void> {
       }
       if (sub === "status" || sub === "") {
         const result = await validateAuth();
-        printBanner();
         console.log(`  Auth status · ${result.message}`);
         console.log("");
         if (!result.authenticated) console.log(authSetupInstructions());
         return;
       }
       if (sub === "login") {
-        printBanner();
         const started = await startDeviceFlow();
         console.log(`  Open ${started.verification_uri}`);
         console.log(`  Enter code: ${started.user_code}`);
@@ -659,7 +660,6 @@ async function main(): Promise<void> {
       const range = resolveRange(opts);
       const label = rangeLabel(range, opts);
       if (!opts.quiet) {
-        printBanner();
         console.log(`  Config run · ${labelPath} · ${cfg.users.length} users · ${label}\n`);
       }
       for (const user of cfg.users) {
@@ -712,7 +712,6 @@ async function main(): Promise<void> {
       const range = resolveRange(opts);
       const label = rangeLabel(range, opts);
       if (!opts.quiet) {
-        printBanner();
         console.log(`  Team radar · ${users.length} users · ${label}\n`);
       }
       const rows: Array<{ username: string; insights: AuditInsights }> = [];
@@ -735,7 +734,6 @@ async function main(): Promise<void> {
       }
       const range = resolveRange(opts);
       const label = rangeLabel(range, opts);
-      if (!opts.quiet) printBanner();
       const a = await auditUser(opts.username, range, opts.quiet ? undefined : printProgress);
       const b = await auditUser(opts.usernameB, range, opts.quiet ? undefined : printProgress);
       const overlap = computeRepoOverlap(opts.username, a.insights, opts.usernameB, b.insights);
@@ -755,7 +753,6 @@ async function main(): Promise<void> {
       }
       const range =
         opts.month || opts.year || (opts.from && opts.to) ? resolveRange(opts) : defaultLensRange();
-      if (!opts.quiet) printBanner();
       const result = await runRepoLens(
         opts.username,
         opts.repo,
@@ -778,7 +775,6 @@ async function main(): Promise<void> {
     const range = resolveRange(opts);
     const label = rangeLabel(range, opts);
     const onProgress = opts.quiet ? undefined : printProgress;
-    if (!opts.quiet) printBanner();
 
     if (opts.command === "proof" || opts.command === "hidden") {
       const full = await auditUser(opts.username, range, onProgress);

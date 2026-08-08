@@ -7,6 +7,7 @@ import type {
   HiddenRepoExplanation,
   ProofNarration,
 } from "@felix-ayush/openhearth-core";
+import { renderBanner } from "./banner.js";
 
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`;
@@ -14,10 +15,9 @@ const amber = (s: string) => `\x1b[33m${s}\x1b[0m`;
 const green = (s: string) => `\x1b[32m${s}\x1b[0m`;
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
 
-export function printBanner(): void {
-  console.log("");
-  console.log(bold("  OpenHearth") + dim(" · contribution audit"));
-  console.log("");
+export function printBanner(version?: string): void {
+  const banner = renderBanner(version);
+  process.stdout.write(banner + "\n");
 }
 
 export function printInsights(insights: AuditInsights, rangeLabel: string): void {
@@ -133,7 +133,6 @@ export function printDoctor(report: {
   core: { remaining: number; limit: number; reset: number };
   search: { remaining: number; limit: number; reset: number };
 }): void {
-  printBanner();
   console.log(bold("  Doctor") + dim(" · environment check"));
   console.log("");
   console.log(`  CLI version           ${report.version}`);
